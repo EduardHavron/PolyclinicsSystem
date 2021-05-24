@@ -1,15 +1,15 @@
-# Stage 0, for downloading project’s npm dependencies, building and compiling the app.
-FROM node:latest as node
+FROM node:14
+RUN apt-get update
+RUN apt-get -y install openssl
+RUN apt-get -y install bzip2
 
-# set working directory
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app/http
 
+ENV PATH /app/http/node_modules/.bin:$PATH
 
-# install package.json (o sea las dependencies)
-COPY package*.json ./
-RUN npm install -g @angular/cli @angular-devkit/build-angular && npm install
+COPY package.json /app/http/package.json
 
-EXPOSE 4201
+RUN npm install
+RUN npm install @angular/cli -g
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start-docker"]

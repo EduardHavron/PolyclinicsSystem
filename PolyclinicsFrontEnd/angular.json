@@ -60,6 +60,15 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
@@ -72,6 +81,9 @@
             },
             "development": {
               "browserTarget": "PolyclinicsFrontEnd:build:development"
+            },
+            "docker": {
+              "browserTarget": "PolyclinicsFrontEnd:build:docker"
             }
           },
           "defaultConfiguration": "development"

@@ -1,9 +1,39 @@
 version: '3.6'
 
 services:
+    database:
+        image: postgres:latest
+        container_name: database
+        environment:
+            - POSTGRES_DB=polyclinicsdb
+            - POSTGRES_USER=admin
+            - POSTGRES_PASSWORD=admin
+        volumes:
+            - ./postgres-data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        networks:
+            - localnetwork
+
+    pgadmin:
+        container_name: pgadmin4
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: 'admin@mail.com'
+            PGADMIN_DEFAULT_PASSWORD: 'admin'
+            PGADMIN_CONFIG_SERVER_MODE: 'False'
+        volumes:
+            - ./pgadmin-4:/var/lib/pgadmin
+
+        ports:
+            - 5050:80
+        networks:
+            - localnetwork
+        restart: on-failure
+        
     backend: 
         build:
-            context: ./PolyclinicsSystemBackend
+            context: ./PolyclinicsSystemBackend/PolyclinicsSystemBackend
             dockerfile: ./Dockerfile
         ports:
             - 5000:80
@@ -27,23 +57,10 @@ services:
         networks: 
             - localnetwork
         volumes:
-            - './PolyclinicsFrontEnd/:/usr/src/app/:rw'
-            - '/usr/src/app/node_modules'
+            - './PolyclinicsFrontEnd:/app/http:rw'
+            - '/app/http/node_modules'
         depends_on: 
             - backend
-            
-    database:
-        image: postgres:latest
-        container_name: database
-        environment: 
-            - POSTGRES_DB=polyclinicsdb
-            - POSTGRES_USER=admin
-            - POSTGRES_PASSWORD=admin
-        ports:
-            - 5432:5432
-        networks:
-            - localnetwork                    
-
 networks: 
     localnetwork:
         driver: bridge
