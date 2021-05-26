@@ -10,8 +10,8 @@ using PolyclinicsSystemBackend.Data;
 namespace PolyclinicsSystemBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210524124241_Added new dtos, changed id type")]
-    partial class Addednewdtoschangedidtype
+    [Migration("20210526232813_Added Entities")]
+    partial class AddedEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -151,6 +151,82 @@ namespace PolyclinicsSystemBackend.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Diagnose", b =>
+                {
+                    b.Property<int>("DiagnoseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("DiagnoseInfo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("MedicalCardId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DiagnoseId");
+
+                    b.HasIndex("MedicalCardId");
+
+                    b.ToTable("Diagnoses");
+                });
+
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.MedicalCard", b =>
+                {
+                    b.Property<int>("MedicalCardId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdditionalInfo")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Gender")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Height")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double?>("Weight")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("MedicalCardId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MedicalCards");
+                });
+
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Treatment", b =>
+                {
+                    b.Property<int>("TreatmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("DiagnoseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TreatmentInstructions")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("TreatmentId");
+
+                    b.HasIndex("DiagnoseId")
+                        .IsUnique();
+
+                    b.ToTable("Treatments");
+                });
+
             modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -280,63 +356,6 @@ namespace PolyclinicsSystemBackend.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.Diagnose", b =>
-                {
-                    b.Property<int>("DiagnoseId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("MedicalCardId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("MedicalCardId1")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("DiagnoseId");
-
-                    b.HasIndex("MedicalCardId1");
-
-                    b.ToTable("Diagnoses");
-                });
-
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.MedicalCard", b =>
-                {
-                    b.Property<string>("MedicalCardId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.HasKey("MedicalCardId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MedicalCards");
-                });
-
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.Treatment", b =>
-                {
-                    b.Property<int>("TreatmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("DiagnoseId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TreatmentInstructions")
-                        .HasColumnType("text");
-
-                    b.HasKey("TreatmentId");
-
-                    b.HasIndex("DiagnoseId")
-                        .IsUnique();
-
-                    b.ToTable("Treatments");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -388,9 +407,42 @@ namespace PolyclinicsSystemBackend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Diagnose", b =>
+                {
+                    b.HasOne("PolyclinicsSystemBackend.Data.Entities.MedicalCard.MedicalCard", "MedicalCard")
+                        .WithMany("Diagnoses")
+                        .HasForeignKey("MedicalCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MedicalCard");
+                });
+
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.MedicalCard", b =>
+                {
+                    b.HasOne("PolyclinicsSystemBackend.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Treatment", b =>
+                {
+                    b.HasOne("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Diagnose", "Diagnose")
+                        .WithOne("Treatment")
+                        .HasForeignKey("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Treatment", "DiagnoseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Diagnose");
+                });
+
             modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.Appointment.Appointment", b =>
                 {
-                    b.HasOne("PolyclinicsSystemBackend.Dtos.MedicalCard.Diagnose", "Diagnose")
+                    b.HasOne("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Diagnose", "Diagnose")
                         .WithMany()
                         .HasForeignKey("DiagnoseId");
 
@@ -432,50 +484,19 @@ namespace PolyclinicsSystemBackend.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.Diagnose", b =>
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.Diagnose", b =>
                 {
-                    b.HasOne("PolyclinicsSystemBackend.Dtos.MedicalCard.MedicalCard", "MedicalCard")
-                        .WithMany("Diagnoses")
-                        .HasForeignKey("MedicalCardId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MedicalCard");
+                    b.Navigation("Treatment");
                 });
 
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.MedicalCard", b =>
+            modelBuilder.Entity("PolyclinicsSystemBackend.Data.Entities.MedicalCard.MedicalCard", b =>
                 {
-                    b.HasOne("PolyclinicsSystemBackend.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.Treatment", b =>
-                {
-                    b.HasOne("PolyclinicsSystemBackend.Dtos.MedicalCard.Diagnose", "Diagnose")
-                        .WithOne("Treatment")
-                        .HasForeignKey("PolyclinicsSystemBackend.Dtos.MedicalCard.Treatment", "DiagnoseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Diagnose");
+                    b.Navigation("Diagnoses");
                 });
 
             modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.Appointment.Appointment", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.Diagnose", b =>
-                {
-                    b.Navigation("Treatment");
-                });
-
-            modelBuilder.Entity("PolyclinicsSystemBackend.Dtos.MedicalCard.MedicalCard", b =>
-                {
-                    b.Navigation("Diagnoses");
                 });
 #pragma warning restore 612, 618
         }

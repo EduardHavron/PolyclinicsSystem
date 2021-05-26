@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using PolyclinicsSystemBackend.Data.Entities;
+using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
 using PolyclinicsSystemBackend.Dtos.Chat;
-using PolyclinicsSystemBackend.Dtos.MedicalCard;
 
 namespace PolyclinicsSystemBackend.Dtos.Appointment
 {

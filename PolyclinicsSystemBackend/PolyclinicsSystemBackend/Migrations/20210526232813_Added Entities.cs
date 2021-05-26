@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace PolyclinicsSystemBackend.Migrations
 {
-    public partial class Addednewdtoschangedidtype : Migration
+    public partial class AddedEntities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +12,14 @@ namespace PolyclinicsSystemBackend.Migrations
                 name: "MedicalCards",
                 columns: table => new
                 {
-                    MedicalCardId = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true)
+                    MedicalCardId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    AdditionalInfo = table.Column<string>(type: "text", nullable: true),
+                    Gender = table.Column<int>(type: "integer", nullable: true),
+                    Height = table.Column<int>(type: "integer", nullable: true),
+                    Weight = table.Column<double>(type: "double precision", nullable: true),
+                    Age = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -23,7 +29,7 @@ namespace PolyclinicsSystemBackend.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,15 +38,15 @@ namespace PolyclinicsSystemBackend.Migrations
                 {
                     DiagnoseId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    MedicalCardId = table.Column<int>(type: "integer", nullable: false),
-                    MedicalCardId1 = table.Column<string>(type: "text", nullable: false)
+                    DiagnoseInfo = table.Column<string>(type: "text", nullable: false),
+                    MedicalCardId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Diagnoses", x => x.DiagnoseId);
                     table.ForeignKey(
-                        name: "FK_Diagnoses_MedicalCards_MedicalCardId1",
-                        column: x => x.MedicalCardId1,
+                        name: "FK_Diagnoses_MedicalCards_MedicalCardId",
+                        column: x => x.MedicalCardId,
                         principalTable: "MedicalCards",
                         principalColumn: "MedicalCardId",
                         onDelete: ReferentialAction.Cascade);
@@ -88,7 +94,7 @@ namespace PolyclinicsSystemBackend.Migrations
                     TreatmentId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DiagnoseId = table.Column<int>(type: "integer", nullable: false),
-                    TreatmentInstructions = table.Column<string>(type: "text", nullable: true)
+                    TreatmentInstructions = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,9 +151,9 @@ namespace PolyclinicsSystemBackend.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Diagnoses_MedicalCardId1",
+                name: "IX_Diagnoses_MedicalCardId",
                 table: "Diagnoses",
-                column: "MedicalCardId1");
+                column: "MedicalCardId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MedicalCards_UserId",

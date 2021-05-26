@@ -10,5 +10,9 @@ namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
       [Required]
       [StringLength(100, ErrorMessage = "Password length must be between 6 and 100 symbols", MinimumLength = 6)]
       public string Password { get; set; }
+      
+      public string FirstName { get; set; }
+      
+      public string LastName { get; set; }
     }
 }

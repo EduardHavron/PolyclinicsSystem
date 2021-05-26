@@ -23,16 +23,19 @@ namespace PolyclinicsSystemBackend.Controllers
   {
     private readonly SignInManager<User> _signInManager;
     private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IOptions<AuthOptions> _options;
 
     public AccountController(
       UserManager<User> userManager,
       SignInManager<User> signInManager,
+      RoleManager<IdentityRole> roleManager,
       IOptions<AuthOptions> options
     )
     {
       _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
       _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+      _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
       _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
@@ -41,14 +44,10 @@ namespace PolyclinicsSystemBackend.Controllers
     {
       var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
-      if (result.Succeeded)
-      {
-        var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-        var token = GenerateJwtToken(model.Email, appUser ?? throw new BusinessLogicException("Results is succeeded but user doesn't founded"));
-        return new {token};
-      }
-
-      throw new BusinessLogicException($"Failed to authorize user, reason: {result}");
+      if (!result.Succeeded) throw new BusinessLogicException($"Failed to authorize user, reason: {result}");
+      var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
+      var token = await GenerateJwtToken(model.Email, appUser ?? throw new BusinessLogicException("Results is succeeded but user doesn't founded"));
+      return new {token};
     }
 
     [HttpPost("register")]
@@ -60,24 +59,25 @@ namespace PolyclinicsSystemBackend.Controllers
         Email = model.Email
       };
       var result = await _userManager.CreateAsync(user, model.Password);
-
+      //_roleManager.
       if (result.Succeeded)
       {
         await _signInManager.SignInAsync(user, false);
       }
-
+    
       return Ok();
     }
 
-    private string GenerateJwtToken(string email, IdentityUser user)
+    private async Task<string> GenerateJwtToken(string email, User user)
     {
       var claims = new List<Claim>
       {
         new (JwtRegisteredClaimNames.Sub, email),
         new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new (ClaimTypes.NameIdentifier, user.Id)
+        new (ClaimTypes.NameIdentifier, user.Id),
       };
-
+      var userRoles = await _userManager.GetRolesAsync(user);
+      claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.Key));
       var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
       var expires = DateTime.Now.AddDays(Convert.ToDouble(_options.Value.ExpireDays));

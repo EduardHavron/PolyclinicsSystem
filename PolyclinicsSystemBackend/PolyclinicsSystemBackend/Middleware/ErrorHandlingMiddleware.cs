@@ -35,7 +35,7 @@ namespace PolyclinicsSystemBackend.Middleware
     {
       switch (exception)
       {
-        case BusinessLogicException _:
+        case BusinessLogicException:
         {
           await WriteErrorAsync(context, exception.GetBaseException().Message, HttpStatusCode.BadRequest);
           _logger.LogError(exception, "Business logic error");
