@@ -20,6 +20,6 @@ namespace PolyclinicsSystemBackend.Data.Entities.MedicalCard
         
         public int? Age { get; set; }
         
-        public List<Diagnose>? Diagnoses { get; set; }
+        public List<Diagnose> Diagnoses { get; set; }
     }
 }
