@@ -24,6 +24,10 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.Logging;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
+using PolyclinicsSystemBackend.Services.Account.Implementations;
+using PolyclinicsSystemBackend.Services.Account.Interface;
+using PolyclinicsSystemBackend.Services.MedicalCard.Implementations;
+using PolyclinicsSystemBackend.Services.MedicalCard.Interface.MedicalCard;
 
 namespace PolyclinicsSystemBackend
 {
@@ -110,6 +114,10 @@ namespace PolyclinicsSystemBackend
                   fv.RegisterValidatorsFromAssemblyContaining<Startup>();
               })
               .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            
+            
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IMedicalCardService, MedicalCardService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext dbContext, IServiceProvider serviceProvider, ILogger<Startup> logger)
