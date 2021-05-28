@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace PolyclinicsSystemBackend.Controllers
 {
     [ApiController]
-    [Route("admin")]
     [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
