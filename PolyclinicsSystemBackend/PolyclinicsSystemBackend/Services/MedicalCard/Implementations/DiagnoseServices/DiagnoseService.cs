@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PolyclinicsSystemBackend.Data;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
+using PolyclinicsSystemBackend.Dtos.Appointment;
 using PolyclinicsSystemBackend.Services.MedicalCard.Interface.Diagnose;
 
 namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.DiagnoseServices
@@ -19,24 +21,133 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
             _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
         }
         
-        public Task<Data.Entities.MedicalCard.MedicalCard?> AddDiagnoseToCard(int medicalCardId, Diagnose diagnose)
+        public async Task<Data.Entities.MedicalCard.MedicalCard?> AddDiagnoseToCard(int appointmentId, int medicalCardId, string diagnose)
         {
-            throw new System.NotImplementedException();
+            _logger.LogInformation("Adding diagnose to med card with Id {Id} using appointment with Id {AppointmentId}"
+                , medicalCardId, appointmentId);
+
+            if (appointmentId == 0 || medicalCardId == 0)
+            {
+                _logger.LogError("Medical card or appointment id was 0");
+                return null;
+            }
+            
+            if (diagnose == string.Empty)
+            {
+                _logger.LogError("Diagnose cannot be empty");
+                return null;
+            }
+
+            var appointment = await _appDbContext.Appointments.FirstOrDefaultAsync(appointmentEntity =>
+                appointmentEntity.AppointmentId == appointmentId);
+            if (appointment == null)
+            {
+                _logger.LogError("Appointment with Id {Id} doesn't exist in database", appointmentId);
+                return null;
+            }
+
+            if (appointment.IsFinalized != AppointmentStatuses.Started)
+            {
+                _logger.LogError("Cannot add diagnose to appointment with status {Status}", appointment.IsFinalized.ToString());
+                return null;
+            }
+
+            var medicalCardExist =
+                await _appDbContext.MedicalCards.AsNoTracking().AnyAsync(medCard => medCard.MedicalCardId == medicalCardId);
+            if (medicalCardExist == false)
+            {
+                _logger.LogError("Medical card with Id {Id} doesn't exist in database", medicalCardId);
+            }
+
+            var diagnoseObject = new Diagnose
+            {
+                DiagnoseDate = DateTime.Now,
+                DiagnoseInfo = diagnose,
+                MedicalCardId = medicalCardId
+
+            };
+            _logger.LogInformation("Adding diagnose to database");
+            var result = await _appDbContext.Diagnoses.AddAsync(diagnoseObject);
+            
+            _logger.LogInformation("Attaching diagnose to appointment");
+            appointment.DiagnoseId = result.Entity.DiagnoseId;
+            _logger.LogInformation("Saving changes");
+            await _appDbContext.SaveChangesAsync();
+            return await _appDbContext.MedicalCards
+                .Include(medCard => medCard.Diagnoses)
+                .ThenInclude(diagnoseEntity => diagnoseEntity.Treatment)
+                .FirstOrDefaultAsync(medCard =>
+                medCard.MedicalCardId == medicalCardId);
         }
 
-        public Task<Data.Entities.MedicalCard.MedicalCard?> UpdateDiagnose(Diagnose diagnose)
+        public async Task<Data.Entities.MedicalCard.MedicalCard?> UpdateDiagnose(int diagnoseId, string diagnose)
         {
-            throw new System.NotImplementedException();
+            _logger.LogInformation("Updating diagnose with Id {Id}",diagnoseId);
+            var oldDiagnose = await _appDbContext.Diagnoses.FirstOrDefaultAsync(diagnoseEntity =>
+                diagnoseEntity.DiagnoseId == diagnoseId);
+            if (oldDiagnose == null)
+            {
+                _logger.LogError("Diagnose with Id {Id} doesn't exist", diagnoseId);
+                return null;
+            }
+            _logger.LogInformation("Retrieving linked appointment");
+            var appointment =
+                await _appDbContext.Appointments.AsNoTracking().FirstOrDefaultAsync(
+                    appointmentEntity => appointmentEntity.DiagnoseId == diagnoseId);
+            if (appointment == null)
+            {
+                _logger.LogError("No appointment associated with diagnose found");
+                return null;
+            }
+
+            if (appointment.IsFinalized != AppointmentStatuses.Started)
+            {
+                _logger.LogError("Cannot update diagnose for appointment with status {Status}" ,
+                    appointment.IsFinalized.ToString());
+                return null;
+            }
+            
+            if (diagnose == string.Empty)
+            {
+                _logger.LogError("Diagnose cannot be empty");
+                return null;
+            }
+            
+            oldDiagnose.DiagnoseDate = DateTime.Now;
+            oldDiagnose.DiagnoseInfo = diagnose;
+            await _appDbContext.SaveChangesAsync();
+            return await _appDbContext.MedicalCards
+                .Include(medCard => medCard.Diagnoses)
+                .ThenInclude(diagnoseEntity => diagnoseEntity.Treatment)
+                .FirstOrDefaultAsync(medCard =>
+                    medCard.MedicalCardId == oldDiagnose.MedicalCardId);
         }
 
-        public Task FinalizeDiagnose(int diagnoseId)
+        public async Task<bool> DeleteDiagnose(int diagnoseId)
         {
-            throw new System.NotImplementedException();
-        }
+            _logger.LogInformation("Trying to delete diagnose with Id {Id}", diagnoseId);
+            var diagnose =
+                await _appDbContext.Diagnoses.FirstOrDefaultAsync(diagnoseEntity =>
+                    diagnoseEntity.DiagnoseId == diagnoseId);
+            if (diagnose == null)
+            {
+                _logger.LogError("No diagnose with Id {Id} was founded", diagnoseId);
+                return false;
+            }
+            
+            var appointment =
+                await _appDbContext.Appointments.FirstOrDefaultAsync(appointmentEntity =>
+                    appointmentEntity.DiagnoseId == diagnoseId);
 
-        public Task DeleteDiagnose(int diagnoseId)
-        {
-            throw new System.NotImplementedException();
+            if (appointment != null && appointment.IsFinalized != AppointmentStatuses.Started)
+            {
+                _logger.LogError("Cannot delete diagnose where associated appointment has status {Status}",
+                    appointment.IsFinalized.ToString());
+                return false;
+            }
+
+            _appDbContext.Diagnoses.Remove(diagnose);
+            return true;
         }
     }
 }

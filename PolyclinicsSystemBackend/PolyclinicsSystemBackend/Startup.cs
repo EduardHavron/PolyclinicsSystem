@@ -27,7 +27,11 @@ using PolyclinicsSystemBackend.Dtos.Account.Authorize;
 using PolyclinicsSystemBackend.Services.Account.Implementations;
 using PolyclinicsSystemBackend.Services.Account.Interface;
 using PolyclinicsSystemBackend.Services.MedicalCard.Implementations;
+using PolyclinicsSystemBackend.Services.MedicalCard.Implementations.DiagnoseServices;
+using PolyclinicsSystemBackend.Services.MedicalCard.Implementations.TreatmentServices;
+using PolyclinicsSystemBackend.Services.MedicalCard.Interface.Diagnose;
 using PolyclinicsSystemBackend.Services.MedicalCard.Interface.MedicalCard;
+using PolyclinicsSystemBackend.Services.MedicalCard.Interface.Treatment;
 
 namespace PolyclinicsSystemBackend
 {
@@ -118,6 +122,8 @@ namespace PolyclinicsSystemBackend
             
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IMedicalCardService, MedicalCardService>();
+            services.AddScoped<IDiagnoseService, DiagnoseService>();
+            services.AddScoped<ITreatmentService, TreatmentService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext dbContext, IServiceProvider serviceProvider, ILogger<Startup> logger)

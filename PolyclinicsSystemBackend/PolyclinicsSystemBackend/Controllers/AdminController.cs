@@ -6,6 +6,7 @@ namespace PolyclinicsSystemBackend.Controllers
 {
     [ApiController]
     [Authorize(Roles = "Admin")]
+    [Route("admin")]
     public class AdminController : ControllerBase
     {
         public AdminController()

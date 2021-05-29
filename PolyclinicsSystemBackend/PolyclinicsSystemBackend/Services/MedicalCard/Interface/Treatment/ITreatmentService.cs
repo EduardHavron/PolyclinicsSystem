@@ -8,6 +8,6 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Interface.Treatment
 
         public Task<Data.Entities.MedicalCard.MedicalCard?> UpdateTreatment(Data.Entities.MedicalCard.Treatment treatment);
 
-        public Task DeleteTreatment(int treatmentId);
+        public Task<bool> DeleteTreatment(int treatmentId);
     }
 }

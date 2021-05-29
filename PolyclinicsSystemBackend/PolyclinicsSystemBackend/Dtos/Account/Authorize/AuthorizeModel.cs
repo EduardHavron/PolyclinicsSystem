@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace PolyclinicsSystemBackend.BAL.Authorize
+namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
 {
     public class AuthorizeModel
     {
