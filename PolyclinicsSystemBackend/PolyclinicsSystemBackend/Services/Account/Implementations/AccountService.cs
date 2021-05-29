@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PolyclinicsSystemBackend.BAL.Authorize;
 using PolyclinicsSystemBackend.Config.Options;
 using PolyclinicsSystemBackend.Data.Entities;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;

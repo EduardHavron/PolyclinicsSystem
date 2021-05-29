@@ -12,5 +12,7 @@ namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
       public string LastName { get; set; }
       
       public Roles Role { get; set; }
+      
+      public string DoctorType { get; set; }
     }
 }

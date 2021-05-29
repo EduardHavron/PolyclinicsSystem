@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using PolyclinicsSystemBackend.BAL.Authorize;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
 
 namespace PolyclinicsSystemBackend.Services.Account.Interface
