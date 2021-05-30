@@ -9,7 +9,7 @@ namespace PolyclinicsSystemBackend.Dtos.Chat
 
         public int AppointmentId { get; set; }
 
-        public Appointment.Appointment Appointment { get; set; }
+        public Data.Entities.Appointment.Appointment Appointment { get; set; }
 
         public string SenderId { get; set; }
 

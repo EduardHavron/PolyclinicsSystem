@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using PolyclinicsSystemBackend.Data.Entities;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
+using PolyclinicsSystemBackend.Dtos.Appointment;
 using PolyclinicsSystemBackend.Dtos.Chat;
 
-namespace PolyclinicsSystemBackend.Dtos.Appointment
+namespace PolyclinicsSystemBackend.Data.Entities.Appointment
 {
     public class Appointment
     {
@@ -12,7 +12,7 @@ namespace PolyclinicsSystemBackend.Dtos.Appointment
 
         public DateTime AppointmentDate { get; set; }
 
-        public AppointmentStatuses IsFinalized { get; set; }
+        public AppointmentStatuses AppointmentStatus { get; set; }
 
         public string DoctorId { get; set; }
 

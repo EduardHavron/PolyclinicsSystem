@@ -42,10 +42,10 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
                 return null;
             }
 
-            if (appointment.IsFinalized != AppointmentStatuses.Started)
+            if (appointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogError("Cannot add diagnose to appointment with status {Status}",
-                    appointment.IsFinalized.ToString());
+                    appointment.AppointmentStatus.ToString());
                 return null;
             }
 
@@ -102,10 +102,10 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
                 return null;
             }
 
-            if (appointment.IsFinalized != AppointmentStatuses.Started)
+            if (appointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogError("Cannot update diagnose for appointment with status {Status}",
-                    appointment.IsFinalized.ToString());
+                    appointment.AppointmentStatus.ToString());
                 return null;
             }
 
@@ -146,10 +146,10 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
                     .FirstOrDefaultAsync(appointmentEntity =>
                     appointmentEntity.DiagnoseId == diagnoseId);
 
-            if (appointment != null && appointment.IsFinalized != AppointmentStatuses.Started)
+            if (appointment != null && appointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogError("Cannot delete diagnose where associated appointment has status {Status}",
-                    appointment.IsFinalized.ToString());
+                    appointment.AppointmentStatus.ToString());
                 return false;
             }
             _logger.LogInformation("Removing diagnose from database");

@@ -80,7 +80,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
                 _logger.LogError("No associated appointment with related diagnose was founded");
                 return null;
             }
-            if (associatedAppointment.IsFinalized != AppointmentStatuses.Started)
+            if (associatedAppointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogError("Associated appointment with Id {Id} status is not {Status} ",
                     associatedAppointment.AppointmentId, AppointmentStatuses.Started.ToString());
@@ -113,7 +113,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
                 return false;
             }
 
-            if (associatedAppointment.IsFinalized != AppointmentStatuses.Started)
+            if (associatedAppointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogError("Associated appointment with Id {Id} status is not {Status} ",
                     associatedAppointment.AppointmentId, AppointmentStatuses.Started.ToString());

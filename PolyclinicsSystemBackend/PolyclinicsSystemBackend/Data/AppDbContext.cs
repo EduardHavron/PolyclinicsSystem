@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PolyclinicsSystemBackend.Data.Entities;
+using PolyclinicsSystemBackend.Data.Entities.Appointment;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
 using PolyclinicsSystemBackend.Dtos.Appointment;
 using PolyclinicsSystemBackend.Dtos.Chat;
