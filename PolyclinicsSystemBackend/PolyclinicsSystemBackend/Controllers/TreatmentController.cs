@@ -21,7 +21,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPost]
         [Route("{diagnoseId}")]
-        public async Task<IActionResult> AddTreatmentToDiagnose(int diagnoseId, Treatment treatment)
+        public async Task<IActionResult> AddTreatmentToDiagnose(int diagnoseId, string treatment)
         {
             var result = await _treatmentService.AddTreatmentToDiagnose(diagnoseId, treatment);
             return result is null ? BadRequest() : Ok(result);
@@ -29,9 +29,9 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPatch]
         [Route("{treatmentId}")]
-        public async Task<IActionResult> UpdateTreatment(int treatmentId, Treatment treatment)
+        public async Task<IActionResult> UpdateTreatment(int treatmentId, string treatment)
         {
-            var result = await _treatmentService.UpdateTreatment(treatment);
+            var result = await _treatmentService.UpdateTreatment(treatmentId, treatment);
             return result is null ? BadRequest() : Ok(result);
         }
 

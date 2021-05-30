@@ -25,7 +25,7 @@ namespace PolyclinicsSystemBackend.Controllers
             var result = await _diagnoseService.AddDiagnoseToCard(appointmentId, medicalCardId, diagnose);
             return result is null ? BadRequest() : Ok(result);
         }
-        
+
         [HttpPatch]
         [Route("{diagnoseId}")]
         public async Task<IActionResult> UpdateDiagnose(int diagnoseId, string diagnose)

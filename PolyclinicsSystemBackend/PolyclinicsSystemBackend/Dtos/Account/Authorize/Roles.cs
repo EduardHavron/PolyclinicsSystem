@@ -1,6 +1,6 @@
 namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
 {
-    public enum Roles : int
+    public enum Roles
     {
         Patient,
         Doctor,

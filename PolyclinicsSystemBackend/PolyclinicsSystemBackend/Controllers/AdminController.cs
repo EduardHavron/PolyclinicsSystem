@@ -9,11 +9,6 @@ namespace PolyclinicsSystemBackend.Controllers
     [Route("admin")]
     public class AdminController : ControllerBase
     {
-        public AdminController()
-        {
-
-        }
-
         [HttpGet("test")]
         public async Task<IActionResult> TestAdmin()
         {

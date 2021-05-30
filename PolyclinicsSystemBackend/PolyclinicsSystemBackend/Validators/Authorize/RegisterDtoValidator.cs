@@ -1,4 +1,3 @@
-using System.Data;
 using FluentValidation;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
 
@@ -22,6 +21,10 @@ namespace PolyclinicsSystemBackend.Validators.Authorize
 
             RuleFor(dto => dto.Role).IsInEnum()
                 .WithMessage("Role should be specified");
+
+            RuleFor(dto => dto.DoctorType).NotEmpty()
+                .When(dto => dto.Role == Roles.Doctor)
+                .WithMessage("Doctor type should be specified for doctor role");
         }
     }
 }

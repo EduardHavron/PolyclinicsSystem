@@ -1,6 +1,6 @@
 namespace PolyclinicsSystemBackend.Data.Entities.MedicalCard
 {
-    public enum Genders : int
+    public enum Genders
     {
         Male,
         Female
