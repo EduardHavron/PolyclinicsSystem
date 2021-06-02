@@ -18,9 +18,12 @@ using Microsoft.OpenApi.Models;
 using PolyclinicsSystemBackend.Config.Options;
 using PolyclinicsSystemBackend.Data;
 using PolyclinicsSystemBackend.Data.Entities;
+using PolyclinicsSystemBackend.Data.Entities.User;
 using PolyclinicsSystemBackend.Middleware;
 using PolyclinicsSystemBackend.Services.Account.Implementations;
 using PolyclinicsSystemBackend.Services.Account.Interface;
+using PolyclinicsSystemBackend.Services.Appointment.Implementations;
+using PolyclinicsSystemBackend.Services.Appointment.Interface;
 using PolyclinicsSystemBackend.Services.MedicalCard.Implementations;
 using PolyclinicsSystemBackend.Services.MedicalCard.Implementations.DiagnoseServices;
 using PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalCardServices;
@@ -78,6 +81,7 @@ namespace PolyclinicsSystemBackend
                 options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
             });
             services.Configure<AuthOptions>(Configuration.GetSection("Auth"));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "PolyclinicsSystemBackend API", Version = "v1"});
@@ -112,14 +116,18 @@ namespace PolyclinicsSystemBackend
                 {
                     fv.ImplicitlyValidateChildProperties = true;
                     fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-
+            
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IMedicalCardService, MedicalCardService>();
             services.AddScoped<IDiagnoseService, DiagnoseService>();
             services.AddScoped<ITreatmentService, TreatmentService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
+            //services.AddScoped<IChatService, ChatService>();
+
+            //services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext dbContext,
@@ -141,7 +149,10 @@ namespace PolyclinicsSystemBackend
             app.UseAuthorization();
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseEndpoints(endpoints =>
-                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}"));
+            {
+                endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+                //endpoints.MapHub<ChatHub>("/chat");
+            });
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PolyclinicsSystemBackend API V1"));
             dbContext.Database.Migrate();

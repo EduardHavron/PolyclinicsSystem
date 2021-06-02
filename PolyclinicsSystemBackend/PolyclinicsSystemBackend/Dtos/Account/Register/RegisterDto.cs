@@ -1,4 +1,6 @@
-namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
+using PolyclinicsSystemBackend.HelperEntities;
+
+namespace PolyclinicsSystemBackend.Dtos.Account.Register
 {
     public class RegisterDto
     {

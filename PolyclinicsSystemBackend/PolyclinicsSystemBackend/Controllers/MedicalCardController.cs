@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
+using PolyclinicsSystemBackend.Dtos.MedicalCard;
 using PolyclinicsSystemBackend.Services.MedicalCard.Interface.MedicalCard;
 
 namespace PolyclinicsSystemBackend.Controllers
@@ -21,19 +22,19 @@ namespace PolyclinicsSystemBackend.Controllers
         }
 
         [HttpGet]
-        [Route("{userId}")]
+        [Route("get/{userId}")]
         public async Task<IActionResult> GetMedicalCard(string userId, bool includeDiagnoses = false)
         {
             var result = await _medicalCardService.GetMedicalCard(userId, includeDiagnoses);
-            return result is null ? NotFound() : Ok(result);
+            return result.IsSuccess ? Ok(result.Result) : NotFound(result.Errors);
         }
 
         [HttpPatch]
-        [Route("{medicalCardId}")]
-        public async Task<IActionResult> UpdateMedicalCard(int medicalCardId, MedicalCard medicalCard)
+        [Route("update/{medicalCardId}")]
+        public async Task<IActionResult> UpdateMedicalCard(int medicalCardId, MedicalCardDto medicalCard)
         {
             var result = await _medicalCardService.UpdateMedicalCard(medicalCard);
-            return result is null ? BadRequest() : Ok(result);
+            return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
     }
 }

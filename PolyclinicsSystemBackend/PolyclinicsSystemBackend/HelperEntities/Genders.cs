@@ -1,4 +1,4 @@
-namespace PolyclinicsSystemBackend.Data.Entities.MedicalCard
+namespace PolyclinicsSystemBackend.HelperEntities
 {
     public enum Genders
     {

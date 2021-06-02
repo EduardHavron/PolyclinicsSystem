@@ -1,13 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using PolyclinicsSystemBackend.Data.Entities.Chat;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
-using PolyclinicsSystemBackend.Dtos.Appointment;
 using PolyclinicsSystemBackend.Dtos.Chat;
 
-namespace PolyclinicsSystemBackend.Data.Entities.Appointment
+namespace PolyclinicsSystemBackend.Dtos.Appointment
 {
-    public class Appointment
+    public class AppointmentDto
     {
         public int AppointmentId { get; set; }
 
@@ -17,16 +15,10 @@ namespace PolyclinicsSystemBackend.Data.Entities.Appointment
 
         public string DoctorId { get; set; }
 
-        public User.User Doctor { get; set; }
-
         public string PatientId { get; set; }
-
-        public User.User Patient { get; set; }
-
-        public int? DiagnoseId { get; set; }
 
         public Diagnose? Diagnose { get; set; }
 
-        public List<Message> Messages { get; set; }
+        public List<MessageDto> Messages { get; set; }
     }
 }

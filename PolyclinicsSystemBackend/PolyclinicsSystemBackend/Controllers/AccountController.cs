@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
+using PolyclinicsSystemBackend.Dtos.Account.Register;
 using PolyclinicsSystemBackend.Services.Account.Interface;
 
 namespace PolyclinicsSystemBackend.Controllers
@@ -22,14 +23,14 @@ namespace PolyclinicsSystemBackend.Controllers
         public async Task<IActionResult> Authorize([FromBody] AuthorizeDto model)
         {
             var result = await _accountService.Authorize(model);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             var result = await _accountService.Register(model);
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
     }
 }

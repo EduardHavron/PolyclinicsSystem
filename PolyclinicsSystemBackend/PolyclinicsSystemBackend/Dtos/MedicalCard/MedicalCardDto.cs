@@ -1,15 +1,14 @@
 using System.Collections.Generic;
+using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
 using PolyclinicsSystemBackend.HelperEntities;
 
-namespace PolyclinicsSystemBackend.Data.Entities.MedicalCard
+namespace PolyclinicsSystemBackend.Dtos.MedicalCard
 {
-    public class MedicalCard
+    public class MedicalCardDto
     {
         public int MedicalCardId { get; set; }
 
-        public string UserId { get; set; }
-
-        public User.User User { get; set; }
+        public string? UserId { get; set; }
 
         public string? AdditionalInfo { get; set; }
 
@@ -21,6 +20,6 @@ namespace PolyclinicsSystemBackend.Data.Entities.MedicalCard
 
         public int? Age { get; set; }
 
-        public List<Diagnose> Diagnoses { get; set; }
+        public List<DiagnoseDto>? Diagnoses { get; set; }
     }
 }

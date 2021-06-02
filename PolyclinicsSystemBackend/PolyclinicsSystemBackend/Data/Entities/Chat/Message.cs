@@ -1,7 +1,6 @@
 ﻿using System;
-using PolyclinicsSystemBackend.Data.Entities;
 
-namespace PolyclinicsSystemBackend.Dtos.Chat
+namespace PolyclinicsSystemBackend.Data.Entities.Chat
 {
     public class Message
     {
@@ -13,7 +12,7 @@ namespace PolyclinicsSystemBackend.Dtos.Chat
 
         public string SenderId { get; set; }
 
-        public User Sender { get; set; }
+        public User.User Sender { get; set; }
 
         public string MessageContent { get; set; }
 

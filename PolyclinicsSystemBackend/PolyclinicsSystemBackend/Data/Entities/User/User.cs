@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace PolyclinicsSystemBackend.Data.Entities
+namespace PolyclinicsSystemBackend.Data.Entities.User
 {
     public class User : IdentityUser
     {

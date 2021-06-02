@@ -1,4 +1,4 @@
-namespace PolyclinicsSystemBackend.Dtos.Account.Authorize
+namespace PolyclinicsSystemBackend.HelperEntities
 {
     public enum Roles
     {
