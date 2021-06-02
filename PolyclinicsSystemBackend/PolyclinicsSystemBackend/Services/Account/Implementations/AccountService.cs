@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using PolyclinicsSystemBackend.Config.Options;
 using PolyclinicsSystemBackend.Data.Entities;
 using PolyclinicsSystemBackend.Data.Entities.User;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
+using PolyclinicsSystemBackend.Dtos.Account.Doctor;
 using PolyclinicsSystemBackend.Dtos.Account.Register;
 using PolyclinicsSystemBackend.Dtos.Generics;
 using PolyclinicsSystemBackend.Exceptions;
@@ -31,6 +33,7 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
         public AccountService(
             SignInManager<User> signInManager,
@@ -38,7 +41,8 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             RoleManager<IdentityRole> roleManager,
             IOptions<AuthOptions> options,
             ILogger<AccountService> logger,
-            IMedicalCardService medicalCardService)
+            IMedicalCardService medicalCardService,
+            IMapper mapper)
         {
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
@@ -46,6 +50,7 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _medicalCardService = medicalCardService ?? throw new ArgumentNullException(nameof(medicalCardService));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<GenericResponse<IdentityError, string>> Register(RegisterDto registerDto)
@@ -121,6 +126,24 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             {
                 IsSuccess = false,
                 Errors = new []{$"No userId with Email {email} founded"}
+            };
+        }
+
+        public async Task<GenericResponse<string, List<DoctorDto>>> GetDoctors()
+        {
+            _logger.LogInformation("Retrieving all doctors");
+            var doctors = await _userManager.GetUsersInRoleAsync(Roles.Doctor.ToString());
+            if (doctors.Count != 0)
+                return new GenericResponse<string, List<DoctorDto>>
+                {
+                    IsSuccess = true,
+                    Result = _mapper.Map<List<DoctorDto>>(doctors)
+                };
+            _logger.LogError("No doctors was founded in database");
+            return new GenericResponse<string, List<DoctorDto>>
+            {
+                IsSuccess = false,
+                Errors = new[] {"No doctors was founded"}
             };
         }
 

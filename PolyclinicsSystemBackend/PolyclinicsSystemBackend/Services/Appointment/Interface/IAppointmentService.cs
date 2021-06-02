@@ -22,5 +22,6 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Interface
         public Task<GenericResponse<string, AppointmentDto>> FinalizeAppointment(int appointmentId);
 
         public Task<bool> CancelAppointment(int appointmentId);
+        
     }
 }
