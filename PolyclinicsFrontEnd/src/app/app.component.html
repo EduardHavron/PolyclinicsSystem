@@ -7,10 +7,10 @@
 <mat-toolbar>
   <mat-toolbar-row class="header">
     <div class="header-left">
-      <div class="header-item" *ngIf="!this.isAuthorized">
+      <div class="header-item" *ngIf="!this.isAuthorized" routerLink="/authorize/login">
         <span class="header-item-text">Authorize</span>
       </div>
-      <div class="header-item" *ngIf="!this.isAuthorized">
+      <div class="header-item" *ngIf="!this.isAuthorized" routerLink="/authorize/register">
         <span class="header-item-text">Register</span>
         <mat-icon></mat-icon>
       </div>

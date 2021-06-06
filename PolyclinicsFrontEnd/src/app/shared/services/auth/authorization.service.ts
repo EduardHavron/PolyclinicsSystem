@@ -13,26 +13,25 @@ import {MatSnackBar} from "@angular/material/snack-bar";
   providedIn: 'root'
 })
 export class AuthorizationService {
-  private currentUserSubject: BehaviorSubject<User>;
-  public currentUser: Observable<User>
+  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUser: Observable<User | null>
   private url = environment.apiUrl + 'account/';
   constructor(private http: HttpClient,
               private _snackBar: MatSnackBar) {
-    this.currentUserSubject = new BehaviorSubject
-      <User> (new User);
+    this.currentUserSubject = new BehaviorSubject(JSON.parse(<string>localStorage.getItem('token')));
     this.currentUser = this.currentUserSubject.asObservable()
   }
 
   get isAuthorized(): boolean {
     const currentUser = this.currentUserSubject.getValue()
-    console.log("getted user value")
-    return currentUser.token.length > 0;
+
+    return currentUser != null && currentUser.token.length > 0;
   }
 
   get isAdmin(): boolean {
     const currentUser = this.currentUserSubject.getValue();
 
-    if (currentUser.token.length > 0) {
+    if (currentUser != null && currentUser.token.length > 0) {
       return currentUser.roles.includes(Role.admin);
     }
 
@@ -42,7 +41,7 @@ export class AuthorizationService {
   get isPatient(): boolean {
     const currentUser = this.currentUserSubject.getValue();
 
-    if (currentUser.token.length > 0) {
+    if (currentUser != null && currentUser.token.length > 0) {
       return currentUser.roles.includes(Role.patient);
     }
 
@@ -51,7 +50,7 @@ export class AuthorizationService {
 
   get isDoctor(): boolean {
     const currentUser = this.currentUserSubject.getValue();
-    if (currentUser.token.length > 0) {
+    if (currentUser != null && currentUser.token.length > 0) {
       return currentUser.roles.includes(Role.doctor);
     }
     return false;
@@ -82,7 +81,7 @@ export class AuthorizationService {
       .pipe(
         tap(res => {
           if (res.token.length > 0) {
-            localStorage.setItem('token', JSON.stringify(res.token));
+            localStorage.setItem('token', JSON.stringify(res));
             this.currentUserSubject.next(res);
             this._snackBar.open(`Successfully authorized as ${user.email}`, 'Success',
               {
@@ -102,7 +101,7 @@ export class AuthorizationService {
 
   logout() {
     localStorage.removeItem('token');
-    this.currentUserSubject.next(new User());
+    this.currentUserSubject.next(null);
   }
 
 }

@@ -8,6 +8,7 @@ import {filter, map, shareReplay} from "rxjs/operators";
 import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 import {User} from "./shared/models/user/User";
 import {Role} from "./shared/static/role";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-root',
@@ -16,16 +17,14 @@ import {Role} from "./shared/static/role";
 })
 export class AppComponent implements OnInit{
   title = 'PolyclinicsFrontEnd';
-  public user =  new User()
+  public user: User | null
   public isLoading = new Observable<boolean>();
   constructor(public authService: AuthorizationService,
               private isLoadingService: IsLoadingService,
-              private router: Router) {
+              private router: Router,
+              private _snackBar: MatSnackBar) {
+    this.user = null
     this.authService.currentUser.subscribe(user => this.user = user)
-    let testUser = new Login()
-    testUser.email = "admin@mail.com"
-    testUser.password = "Admin1234!"
-    this.authService.signIn(testUser).subscribe()
   }
 
   ngOnInit() {
@@ -54,22 +53,28 @@ export class AppComponent implements OnInit{
   }
 
   get isAuthorized(): boolean {
-    return this.user.token.length > 0
+    return this.user != null && this.user.token.length > 0
   }
 
   get isAdmin(): boolean {
-    return this.authService.isAdmin
+    return this.user != null && this.authService.isAdmin
   }
 
   get isPatient(): boolean {
-    return this.authService.isPatient
+    return this.user != null && this.authService.isPatient
   }
 
   get isDoctor(): boolean {
-    return this.authService.isDoctor
+    return this.user != null && this.authService.isDoctor
   }
 
   public logout() {
     this.authService.logout()
+    this.router.navigate(['/authorize/login'])
+      .then(() => {
+        this._snackBar.open("Successfully logged out", "Information", {
+          duration: 5000
+        })
+      })
   }
 }
