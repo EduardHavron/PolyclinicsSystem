@@ -52,6 +52,7 @@ namespace PolyclinicsSystemBackend
                     c.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+            services.AddCors();
             services
                 .AddAuthentication(options =>
                 {
@@ -145,6 +146,12 @@ namespace PolyclinicsSystemBackend
 
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+            });
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<ErrorHandlingMiddleware>();

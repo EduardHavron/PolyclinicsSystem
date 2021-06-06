@@ -27,7 +27,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalC
         }
 
 
-        public async Task<GenericResponse<string, MedicalCardDto>> GetMedicalCard(string userId, bool isDiagnoseIncluded)
+        public async Task<GenerisResult<string, MedicalCardDto>> GetMedicalCard(string userId, bool isDiagnoseIncluded)
         {
             _logger.LogInformation("Getting medical card for user with Id {Id}.\n" +
                                    "Including diagnoses: {IncludingDiagnoses}",
@@ -36,7 +36,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalC
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogError("User Id was null or empty!");
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"User Id was null or empty!"}
@@ -55,35 +55,35 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalC
             if (medicalCard is null)
             {
                 _logger.LogError("Medical card associated with user wasn't founded");
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Medical card associated with user wasn't founded"}
                 };
             }
             _logger.LogInformation("Successfully retrieved medical card for user {UserId}", userId);
-            return new GenericResponse<string, MedicalCardDto>
+            return new GenerisResult<string, MedicalCardDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<MedicalCardDto>(medicalCard)
             };
         }
 
-        public async Task<GenericResponse<string, MedicalCardDto>> CreateMedicalCard(string userId)
+        public async Task<GenerisResult<string, MedicalCardDto>> CreateMedicalCard(string userId)
         {
             _logger.LogInformation("Creating empty medical card for user {UserId}", userId);
             var result = await _appDbContext.MedicalCards.AddAsync(new Data.Entities.MedicalCard.MedicalCard
                 {UserId = userId});
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, MedicalCardDto>
+            return new GenerisResult<string, MedicalCardDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<MedicalCardDto>(result.Entity)
             };
         }
 
-        public async Task<GenericResponse<string, MedicalCardDto>> UpdateMedicalCard(
+        public async Task<GenerisResult<string, MedicalCardDto>> UpdateMedicalCard(
             MedicalCardDto medicalCard)
         {
             _logger.LogInformation("Updating medical card with Id {Id}", medicalCard.MedicalCardId);
@@ -93,7 +93,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalC
             if (oldMedicalCard is null)
             {
                 _logger.LogError("Medical card with Id {Id} wasn't founded", medicalCard.MedicalCardId);
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"Medical card with Id {medicalCard.MedicalCardId} wasn't founded"}
@@ -107,7 +107,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.MedicalC
             oldMedicalCard.Gender = medicalCard.Gender;
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, MedicalCardDto>
+            return new GenerisResult<string, MedicalCardDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<MedicalCardDto>(oldMedicalCard)

@@ -14,7 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using PolyclinicsSystemBackend.Config.Options;
 using PolyclinicsSystemBackend.Data.Entities;
 using PolyclinicsSystemBackend.Data.Entities.User;
+using PolyclinicsSystemBackend.Dtos.Account;
 using PolyclinicsSystemBackend.Dtos.Account.Authorize;
+using PolyclinicsSystemBackend.Dtos.Account.AuthorizedUser;
 using PolyclinicsSystemBackend.Dtos.Account.Doctor;
 using PolyclinicsSystemBackend.Dtos.Account.Register;
 using PolyclinicsSystemBackend.Dtos.Generics;
@@ -53,7 +55,7 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<GenericResponse<IdentityError, string>> Register(RegisterDto registerDto)
+        public async Task<GenerisResult<IdentityError, AuthorizedUser>> Register(RegisterDto registerDto)
         {
             var user = new User
             {
@@ -68,7 +70,7 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             {
                 _logger.LogInformation("Registration failed. Reasons: {Reasons}",
                     registerResult.Errors.Select(x => x.Description));
-                return new GenericResponse<IdentityError, string> {Errors = registerResult.Errors};
+                return new GenerisResult<IdentityError, AuthorizedUser> {Errors = registerResult.Errors};
             }
 
             var assignRoleResult = await _userManager.AddToRoleAsync(user, registerDto.Role.ToString());
@@ -79,15 +81,15 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
                 {
                     return await Authorize(new AuthorizeDto {Email = registerDto.Email, Password = registerDto.Password});
                 }
-                return new GenericResponse<IdentityError, string>{Errors = result.Errors};
+                return new GenerisResult<IdentityError, AuthorizedUser>{Errors = result.Errors};
             }
 
             _logger.LogInformation("Adding to role failed. Reasons: {Reasons}",
                 assignRoleResult.Errors.Select(x => x.Description));
-            return new GenericResponse<IdentityError, string> {Errors = assignRoleResult.Errors};
+            return new GenerisResult<IdentityError, AuthorizedUser> {Errors = assignRoleResult.Errors};
         }
 
-        public async Task<GenericResponse<IdentityError, string>> Authorize(AuthorizeDto authorizeDto)
+        public async Task<GenerisResult<IdentityError, AuthorizedUser>> Authorize(AuthorizeDto authorizeDto)
         {
             _logger.LogInformation("Logging in user with email: {Email}", authorizeDto.Email);
             var result =
@@ -96,7 +98,7 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             if (!result.Succeeded)
             {
                 _logger.LogInformation("Failed to login user");
-                return new GenericResponse<IdentityError, string>
+                return new GenerisResult<IdentityError, AuthorizedUser>
                 {
                     Errors = new List<IdentityError>
                     {
@@ -108,64 +110,64 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             var appUser = _userManager.Users.AsNoTracking().SingleOrDefault(r => r.NormalizedEmail == authorizeDto.Email.ToUpper());
             var token = await GenerateJwtToken(authorizeDto.Email,
                 appUser ?? throw new BusinessLogicException("Results is succeeded but user doesn't founded"));
-            return new GenericResponse<IdentityError, string> {IsSuccess = true, Result = token};
+            return new GenerisResult<IdentityError, AuthorizedUser> {IsSuccess = true, Result = token};
         }
 
-        public async Task<GenericResponse<string, string>> GetUserId(string email)
+        public async Task<GenerisResult<string, string>> GetUserId(string email)
         {
             _logger.LogInformation("Getting userId by email {Email}", email);
             var user = await _userManager.FindByEmailAsync(email);
             if (user is not null)
-                return new GenericResponse<string, string>
+                return new GenerisResult<string, string>
                 {
                     IsSuccess = true,
                     Result = user.Id
                 };
             _logger.LogError("No userId with Email {Email} founded", email);
-            return new GenericResponse<string, string>
+            return new GenerisResult<string, string>
             {
                 IsSuccess = false,
                 Errors = new []{$"No userId with Email {email} founded"}
             };
         }
 
-        public async Task<GenericResponse<string, List<DoctorDto>>> GetDoctors()
+        public async Task<GenerisResult<string, List<DoctorDto>>> GetDoctors()
         {
             _logger.LogInformation("Retrieving all doctors");
             var doctors = await _userManager.GetUsersInRoleAsync(Roles.Doctor.ToString());
             if (doctors.Count != 0)
-                return new GenericResponse<string, List<DoctorDto>>
+                return new GenerisResult<string, List<DoctorDto>>
                 {
                     IsSuccess = true,
                     Result = _mapper.Map<List<DoctorDto>>(doctors)
                 };
             _logger.LogError("No doctors was founded in database");
-            return new GenericResponse<string, List<DoctorDto>>
+            return new GenerisResult<string, List<DoctorDto>>
             {
                 IsSuccess = false,
                 Errors = new[] {"No doctors was founded"}
             };
         }
 
-        private async Task<GenericResponse<IdentityError, string>> ProcessUserRole(RegisterDto registerDto)
+        private async Task<GenerisResult<IdentityError, string>> ProcessUserRole(RegisterDto registerDto)
         {
-            GenericResponse<IdentityError, string> result = registerDto.Role switch
+            GenerisResult<IdentityError, string> result = registerDto.Role switch
             {
                 Roles.Patient => await ProcessPatient(registerDto),
                 Roles.Doctor => await ProcessDoctor(registerDto),
-                _ => new GenericResponse<IdentityError, string> {IsSuccess = true}
+                _ => new GenerisResult<IdentityError, string> {IsSuccess = true}
             };
 
             return result;
         }
 
-        private async Task<GenericResponse<IdentityError, string>> ProcessPatient(RegisterDto registerDto)
+        private async Task<GenerisResult<IdentityError, string>> ProcessPatient(RegisterDto registerDto)
         {
             _logger.LogInformation("Creating a med card for patient with email {Email}", registerDto.Email);
             var userId = await GetUserId(registerDto.Email);
             if (!userId.IsSuccess || string.IsNullOrEmpty(userId.Result))
             {
-                return  new GenericResponse<IdentityError, string>
+                return  new GenerisResult<IdentityError, string>
                 {
                     Errors = new List<IdentityError>
                     {
@@ -174,13 +176,13 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
                 };
             }
             await _medicalCardService.CreateMedicalCard(userId.Result);
-            return new GenericResponse<IdentityError, string>
+            return new GenerisResult<IdentityError, string>
             {
                 IsSuccess = true
             };
         }
 
-        private async Task<GenericResponse<IdentityError, string>> ProcessDoctor(RegisterDto registerDto)
+        private async Task<GenerisResult<IdentityError, string>> ProcessDoctor(RegisterDto registerDto)
         {
             _logger.LogInformation("Assigning doctor type {DoctorType} to user {UserEmail}",
                 registerDto.DoctorType, registerDto.Email);
@@ -188,19 +190,19 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             user.DoctorType = registerDto.DoctorType;
             var updateResult = await _userManager.UpdateAsync(user);
             if (updateResult.Succeeded)
-                return new GenericResponse<IdentityError, string>
+                return new GenerisResult<IdentityError, string>
                 {
                     IsSuccess = true
                 };
             _logger.LogError("Updating doctor with type failed. Reasons: {Reasons}",
                 updateResult.Errors.Select(x => x.Description));
-            return new GenericResponse<IdentityError, string>
+            return new GenerisResult<IdentityError, string>
             {
                 Errors = updateResult.Errors
             };
         }
 
-        private async Task<string> GenerateJwtToken(string email, User user)
+        private async Task<AuthorizedUser> GenerateJwtToken(string email, User user)
         {
             _logger.LogInformation("Generating JWT token for user {User}", email);
             var claims = new List<Claim>
@@ -223,7 +225,13 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
                 signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new AuthorizedUser
+            {
+                Email = email,
+                Id = user.Id,
+                Roles = userRoles.ToArray(),
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
+            };
         }
     }
 }

@@ -39,7 +39,7 @@ namespace PolyclinicsSystemBackend.Controllers
         }
         
         [HttpPost]
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "Patient, Admin")]
         [Route("create")]
         public async Task<IActionResult> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate)
         {
@@ -48,7 +48,7 @@ namespace PolyclinicsSystemBackend.Controllers
         }
         
         [HttpPatch]
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "Patient, Admin")]
         [Route("reschedule")]
         public async Task<IActionResult> RescheduleAppointment(int appointmentId, DateTime newDate)
         {
@@ -57,7 +57,7 @@ namespace PolyclinicsSystemBackend.Controllers
         }
         
         [HttpPatch]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Admin")]
         [Route("start")]
         public async Task<IActionResult> StartAppointment(int appointmentId)
         {
@@ -66,7 +66,7 @@ namespace PolyclinicsSystemBackend.Controllers
         }
 
         [HttpPatch]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Admin")]
         [Route("finalize")]
         public async Task<IActionResult> FinalizeAppointment(int appointmentId)
         {

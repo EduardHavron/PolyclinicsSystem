@@ -28,7 +28,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<GenericResponse<string, MedicalCardDto>> AddTreatmentToDiagnose(int diagnoseId,
+        public async Task<GenerisResult<string, MedicalCardDto>> AddTreatmentToDiagnose(int diagnoseId,
             string treatment)
         {
             _logger.LogInformation("Adding treatment to diagnose with Id {Id}", diagnoseId);
@@ -39,7 +39,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             if (diagnose == null)
             {
                 _logger.LogError("No diagnose with Id {Id} was found in database", diagnoseId);
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"No diagnose with Id {diagnoseId} was found in database"}
@@ -49,7 +49,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             if (treatment == string.Empty)
             {
                 _logger.LogError("Treatment cannot be empty");
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Treatment cannot be empty"}
@@ -66,7 +66,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             await _appDbContext.Treatments.AddAsync(newTreatment);
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, MedicalCardDto>
+            return new GenerisResult<string, MedicalCardDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<MedicalCardDto>(await _appDbContext.MedicalCards
@@ -79,7 +79,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             };
         }
 
-        public async Task<GenericResponse<string, MedicalCardDto>> UpdateTreatment(int treatmentId, string treatment)
+        public async Task<GenerisResult<string, MedicalCardDto>> UpdateTreatment(int treatmentId, string treatment)
         {
             _logger.LogInformation("Updating treatment with Id {Id}", treatmentId);
             var oldTreatment = await _appDbContext.Treatments
@@ -87,7 +87,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             if (oldTreatment is null)
             {
                 _logger.LogError("Treatment with Id {Id} doesn't exist in database", treatmentId);
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"Treatment with Id {treatmentId} doesn't exist in database"}
@@ -101,7 +101,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             if (associatedAppointment is null)
             {
                 _logger.LogError("No associated appointment with related diagnose was founded");
-                return new GenericResponse<string, MedicalCardDto>
+                return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"No associated appointment with related diagnose was founded"}
@@ -117,7 +117,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Treatmen
             oldTreatment.TreatmentInstructions = treatment;
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, MedicalCardDto>
+            return new GenerisResult<string, MedicalCardDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<MedicalCardDto>(await _appDbContext.Treatments

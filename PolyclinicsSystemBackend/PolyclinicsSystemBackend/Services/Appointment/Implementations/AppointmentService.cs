@@ -35,7 +35,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<GenericResponse<string, AppointmentDto>> GetAppointment(int appointmentId, bool includeDiagnose)
+        public async Task<GenerisResult<string, AppointmentDto>> GetAppointment(int appointmentId, bool includeDiagnose)
         {
             _logger.LogInformation("Getting appointment with Id {Id}", appointmentId);
             var appointment = includeDiagnose
@@ -47,13 +47,13 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                     .Include(appointmentEntity => appointmentEntity.Diagnose)
                     .FirstOrDefaultAsync(appointmentEntity => appointmentEntity.AppointmentId == appointmentId);
             if (appointment is not null)
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<AppointmentDto>(appointment)
             };
             _logger.LogError("No appointment with Id {Id} was found", appointmentId);
-            return new GenericResponse<string, AppointmentDto>
+            return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = false,
                 Errors = new[]{$"No appointment with Id {appointmentId} was found"}
@@ -61,7 +61,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
 
         }
 
-        public async Task<GenericResponse<string, List<AppointmentDto>>> GetAppointmentsForDoctor(string doctorId, bool includeDiagnose)
+        public async Task<GenerisResult<string, List<AppointmentDto>>> GetAppointmentsForDoctor(string doctorId, bool includeDiagnose)
         {
             _logger.LogInformation("Getting all appointments for doctor with Id {Id}", doctorId);
             var appointments = includeDiagnose
@@ -75,20 +75,20 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                     .Where(appointmentEntity => appointmentEntity.DoctorId == doctorId)
                     .ToListAsync();
             if (appointments is not null) return
-                new GenericResponse<string, List<AppointmentDto>>
+                new GenerisResult<string, List<AppointmentDto>>
                 {
                     IsSuccess = true,
                     Result = _mapper.Map<List<AppointmentDto>>(appointments)
                 };
             _logger.LogError("No appointments for doctor with Id {Id} was founded", doctorId);
-            return new GenericResponse<string, List<AppointmentDto>>
+            return new GenerisResult<string, List<AppointmentDto>>
             {
                 IsSuccess = false,
                 Errors = new []{$"No appointments for doctor with Id {doctorId} was founded"}
             };
         }
 
-        public async Task<GenericResponse<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate)
+        public async Task<GenerisResult<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate)
         {
             var doctor = await _userManager.FindByIdAsync(doctorId);
             var doctorRoles = await _userManager.GetRolesAsync(doctor);
@@ -96,7 +96,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             {
                 _logger.LogError("User with Id {Id} was not founded or it doesn't belong to role {Role}",
                     doctorId, Roles.Doctor.ToString());
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"User with Id {doctorId} was not founded or it doesn't belong to role {Roles.Doctor.ToString()}"}
@@ -108,7 +108,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             {
                 _logger.LogError("User with Id {Id} was not founded or it doesn't belong to role {Role}",
                     patientId, Roles.Patient.ToString());
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"User with Id {patientId} was not founded or it doesn't belong to role {Roles.Patient.ToString()}"}
@@ -124,10 +124,26 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (strippedDate <= strippedDateNow)
             {
                 _logger.LogError("Cannot set appointment earlier than now or for the same time");
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"Cannot set appointment earlier than now or for the same time"}
+                };
+            }
+            _logger.LogInformation("Checking if any appointments already exists with given datetime");
+            var existingAppointment = await _appDbContext.Appointments
+                .AnyAsync(appointmentEntity => 
+                    appointmentEntity.DoctorId == doctorId &&(
+                    appointmentEntity.AppointmentDate == strippedDate ||
+                    appointmentEntity.AppointmentDate.AddMinutes(30) == strippedDate ||
+                    appointmentEntity.AppointmentDate.AddMinutes(-30) == strippedDate));
+            if (existingAppointment)
+            {
+                _logger.LogError("Appointment with given date is already setted for this doctor");
+                return new GenerisResult<string, AppointmentDto>
+                {
+                    IsSuccess = false,
+                    Errors = new[] {"Appointment with given date is already setted for this doctor"}
                 };
             }
             var appointment = new Data.Entities.Appointment.Appointment
@@ -141,14 +157,14 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var result = await _appDbContext.Appointments.AddAsync(appointment);
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, AppointmentDto>
+            return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<AppointmentDto>(result.Entity)
             };
         }
 
-        public async Task<GenericResponse<string, AppointmentDto>> RescheduleAppointment(int appointmentId, DateTime newDate)
+        public async Task<GenerisResult<string, AppointmentDto>> RescheduleAppointment(int appointmentId, DateTime newDate)
         {
             _logger.LogInformation("Rescheduling appointment with Id {Id}", appointmentId);
             var appointment = await _appDbContext.Appointments
@@ -156,7 +172,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment is null)
             {
                 _logger.LogError("No appointment with Id {Id} was founded", appointmentId);
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"No appointment with Id {appointmentId} was founded"}
@@ -166,7 +182,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment.AppointmentStatus != AppointmentStatuses.Planned)
             {
                 _logger.LogInformation("Appointment is already started or already finalized");
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Appointment is already started or already finalized"}
@@ -181,24 +197,40 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (strippedDate <= strippedDateNow)
             {
                 _logger.LogError("Cannot set appointment earlier than now or for the same time");
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Cannot set appointment earlier than now or for the same time"}
+                };
+            }
+            _logger.LogInformation("Checking if any appointments already exists with given datetime");
+            var existingAppointment = await _appDbContext.Appointments
+                .AnyAsync(appointmentEntity => 
+                    appointmentEntity.DoctorId == appointment.DoctorId &&(
+                        appointmentEntity.AppointmentDate == strippedDate ||
+                        appointmentEntity.AppointmentDate.AddMinutes(30) == strippedDate ||
+                        appointmentEntity.AppointmentDate.AddMinutes(-30) == strippedDate));
+            if (existingAppointment)
+            {
+                _logger.LogError("Appointment with given date is already setted for this doctor");
+                return new GenerisResult<string, AppointmentDto>
+                {
+                    IsSuccess = false,
+                    Errors = new[] {"Appointment with given date is already setted for this doctor"}
                 };
             }
             _logger.LogInformation("Rescheduling appointment");
             appointment.AppointmentDate = strippedDate;
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, AppointmentDto>
+            return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<AppointmentDto>(appointment)
             };
         }
 
-        public async Task<GenericResponse<string, AppointmentDto>> StartAppointment(int appointmentId)
+        public async Task<GenerisResult<string, AppointmentDto>> StartAppointment(int appointmentId)
         {
             _logger.LogInformation("Marking appointment with Id {Id} as started", appointmentId);
             var appointment = await _appDbContext.Appointments
@@ -207,7 +239,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment is null)
             {
                 _logger.LogError("No appointment with Id {Id} was founded", appointmentId);
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"No appointment with Id {appointmentId} was founded"}
@@ -217,7 +249,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment.AppointmentStatus != AppointmentStatuses.Planned)
             {
                 _logger.LogInformation("Appointment is already started or already finalized");
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Appointment is already started or already finalized"}
@@ -228,14 +260,14 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             appointment.AppointmentStatus = AppointmentStatuses.Started;
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, AppointmentDto>
+            return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<AppointmentDto>(appointment)
             };
         }
 
-        public async Task<GenericResponse<string, AppointmentDto>> FinalizeAppointment(int appointmentId)
+        public async Task<GenerisResult<string, AppointmentDto>> FinalizeAppointment(int appointmentId)
         {
             _logger.LogInformation("Marking appointment with Id {Id} as finalized", appointmentId);
             var appointment = await _appDbContext.Appointments
@@ -244,7 +276,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment is null)
             {
                 _logger.LogError("No appointment with Id {Id} was founded", appointmentId);
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{$"No appointment with Id {appointmentId} was founded"}
@@ -254,7 +286,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             if (appointment.AppointmentStatus != AppointmentStatuses.Started)
             {
                 _logger.LogInformation("Appointment is already finalized or it's not started");
-                return new GenericResponse<string, AppointmentDto>
+                return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
                     Errors = new []{"Appointment is already finalized or it's not started"}
@@ -265,7 +297,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             appointment.AppointmentStatus = AppointmentStatuses.Finalized;
             _logger.LogInformation("Saving changes");
             await _appDbContext.SaveChangesAsync();
-            return new GenericResponse<string, AppointmentDto>
+            return new GenerisResult<string, AppointmentDto>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<AppointmentDto>(appointment)

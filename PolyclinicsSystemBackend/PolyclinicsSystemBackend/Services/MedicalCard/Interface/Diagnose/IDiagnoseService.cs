@@ -6,10 +6,10 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Interface.Diagnose
 {
     public interface IDiagnoseService
     {
-        public Task<GenericResponse<string, MedicalCardDto>> AddDiagnoseToCard(int appointmentId, int medicalCardId,
+        public Task<GenerisResult<string, MedicalCardDto>> AddDiagnoseToCard(int appointmentId, int medicalCardId,
             string diagnose);
 
-        public Task<GenericResponse<string, MedicalCardDto>> UpdateDiagnose(int diagnoseId, string diagnose);
+        public Task<GenerisResult<string, MedicalCardDto>> UpdateDiagnose(int diagnoseId, string diagnose);
 
         public Task<bool> DeleteDiagnose(int diagnoseId);
     }

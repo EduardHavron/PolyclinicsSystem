@@ -8,18 +8,18 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Interface
 {
     public interface IAppointmentService
     {
-        public Task<GenericResponse<string, AppointmentDto>> GetAppointment(int appointmentId, bool includeDiagnose);
+        public Task<GenerisResult<string, AppointmentDto>> GetAppointment(int appointmentId, bool includeDiagnose);
 
-        public Task<GenericResponse<string, List<AppointmentDto>>> GetAppointmentsForDoctor(string doctorId,
+        public Task<GenerisResult<string, List<AppointmentDto>>> GetAppointmentsForDoctor(string doctorId,
             bool includeDiagnose);
         
-        public Task<GenericResponse<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate);
+        public Task<GenerisResult<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate);
 
-        public Task<GenericResponse<string, AppointmentDto>> RescheduleAppointment(int appointmentId, DateTime newDate);
+        public Task<GenerisResult<string, AppointmentDto>> RescheduleAppointment(int appointmentId, DateTime newDate);
 
-        public Task<GenericResponse<string, AppointmentDto>> StartAppointment(int appointmentId);
+        public Task<GenerisResult<string, AppointmentDto>> StartAppointment(int appointmentId);
 
-        public Task<GenericResponse<string, AppointmentDto>> FinalizeAppointment(int appointmentId);
+        public Task<GenerisResult<string, AppointmentDto>> FinalizeAppointment(int appointmentId);
 
         public Task<bool> CancelAppointment(int appointmentId);
         

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace PolyclinicsSystemBackend.Dtos.Generics
 {
-    public class GenericResponse<T, TE>
+    public class GenerisResult<T, TE>
     {
         public bool IsSuccess { get; set; }
         
