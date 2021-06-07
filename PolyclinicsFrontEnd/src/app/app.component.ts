@@ -1,55 +1,40 @@
-import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthorizationService} from "./shared/services/auth/authorization.service";
-import {Login} from "./shared/models/authorize/login";
-import {Observable} from "rxjs";
-import {IsLoadingService} from "@service-work/is-loading";
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from "@angular/router";
-import {filter, map, shareReplay} from "rxjs/operators";
-import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
 import {User} from "./shared/models/user/User";
-import {Role} from "./shared/static/role";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {IsLoadingService} from "@service-work/is-loading";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit{
   title = 'PolyclinicsFrontEnd';
   public user: User | null
-  public isLoading = new Observable<boolean>();
   constructor(public authService: AuthorizationService,
-              private isLoadingService: IsLoadingService,
               private router: Router,
-              private _snackBar: MatSnackBar) {
+              private _snackBar: MatSnackBar,
+              private isLoadingService: IsLoadingService) {
     this.user = null
     this.authService.currentUser.subscribe(user => this.user = user)
+    this.router.events.subscribe((routerEvent => {
+      if (routerEvent instanceof NavigationStart) {
+       this.isLoadingService.add({key: 'app'})
+      }
+
+      if (routerEvent instanceof NavigationEnd ||
+        routerEvent instanceof NavigationCancel ||
+        routerEvent instanceof NavigationError) {
+        setTimeout(() => {
+          this.isLoadingService.remove({key: 'app'})
+        }, 1500)
+      }
+    }));
   }
 
   ngOnInit() {
-    this.isLoading = this.isLoadingService.isLoading$();
-
-    this.router.events
-      .pipe(
-        filter(
-          event =>
-            event instanceof NavigationStart ||
-            event instanceof NavigationEnd ||
-            event instanceof NavigationCancel ||
-            event instanceof NavigationError,
-        ),
-      )
-      .subscribe(event => {
-        // If it's the start of navigation, `add()` a loading indicator
-        if (event instanceof NavigationStart) {
-          this.isLoadingService.add();
-          return;
-        }
-
-        // Else navigation has ended, so `remove()` a loading indicator
-        this.isLoadingService.remove();
-      });
   }
 
   get isAuthorized(): boolean {

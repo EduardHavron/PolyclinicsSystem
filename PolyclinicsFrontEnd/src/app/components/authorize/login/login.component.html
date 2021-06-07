@@ -2,7 +2,7 @@
 
     <mat-card [formGroup]="loginForm" class="login-form-container">
       <div class="login-form-title">
-        <span class="login-form-title-text">LOGIN</span>
+        <mat-card-title class="login-form-title-text">LOGIN</mat-card-title>
       </div>
 
       <div class="login-form-inputs">
@@ -20,13 +20,21 @@
         <div class="login-form-input-block">
           <mat-form-field  class="login-form-input-input" >
             <mat-label>Password</mat-label>
-            <mat-icon matSuffix>password</mat-icon>
-            <input matInput autocomplete="password" formControlName="password" [errorStateMatcher]="matcher">
+            <mat-icon class="login-form-input-icon-clickable" matSuffix (click)="changePasswordVisibility()">
+              <ng-container *ngIf="isPasswordDisplayed">visibility</ng-container>
+              <ng-container *ngIf="!isPasswordDisplayed">visibility_off</ng-container>
+            </mat-icon>
+            <input [attr.type]="this.isPasswordDisplayed ? 'text' : 'password'" matInput autocomplete="password" formControlName="password" [errorStateMatcher]="matcher">
           </mat-form-field>
         </div>
-        <div class="login-form-buttons">
-          <button mat-raised-button color="primary" (click)="login()">Login</button>
+        <div class="login-form-buttons" *ngIf="!('default' | swIsLoading | async)">
+          <button mat-raised-button [attr.disabled]="!('default' | swIsLoading | async)" color="primary" (click)="login()">
+            <span *ngIf="!('default' | swIsLoading | async)">Login</span>
+          </button>
         </div>
+      </div>
+      <div class="login-form-loading">
+        <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate" *ngIf="('login' | swIsLoading | async)"></mat-progress-bar>
       </div>
     </mat-card>
 </div>

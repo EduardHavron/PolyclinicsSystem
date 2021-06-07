@@ -11,8 +11,16 @@
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  margin-left: 1%;
-  margin-right: 1%;
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.header-item-text {
+  font-size: 20px;
+}
+
+.header-item-text-small {
+  font-size: 14px;
 }
 
 .header-left {
@@ -39,4 +47,14 @@
   height: 100%;
   margin-left: 5%;
   margin-right: 5%;
+}
+
+:host ::ng-deep router-outlet + * {
+  height: 93vh;
+  width: 100%;
+}
+
+mat-icon {
+  margin-left: 5px;
+  margin-right: 5px;
 }

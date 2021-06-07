@@ -56,21 +56,19 @@ export class AuthorizationService {
     return false;
   }
 
-  signUp(user: Register) : Observable<User> {
+  signUp(user: Register, assignToUser =  false) : Observable<User> {
     return this.http.post<User>(this.url + 'register', user,
       {reportProgress: true})
       .pipe(
         tap(res => {
             if (res.token.length > 0) {
-              localStorage.setItem('token', JSON.stringify(res));
-              this.currentUserSubject.next(res);
+              if(assignToUser) {
+                localStorage.setItem('token', JSON.stringify(res));
+                this.currentUserSubject.next(res);
+              }
             }
           },
           error => {
-            this._snackBar.open("An error appeared while attempting to register. Verify data and try again", 'Error',
-              {
-                duration: 5000
-              })
           })
       );
   }
@@ -83,17 +81,9 @@ export class AuthorizationService {
           if (res.token.length > 0) {
             localStorage.setItem('token', JSON.stringify(res));
             this.currentUserSubject.next(res);
-            this._snackBar.open(`Successfully authorized as ${user.email}`, 'Success',
-              {
-                duration: 5000
-              })
           }
         },
           error => {
-          this._snackBar.open("An error appeared while attempting to log in. Verify data and try again", 'Error',
-            {
-              duration: 5000
-            })
           })
       );
   }

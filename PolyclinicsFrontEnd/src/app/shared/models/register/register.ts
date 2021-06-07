@@ -6,4 +6,5 @@ export class Register {
   public firstName: string = ''
   public lastName: string = ''
   public role: Roles = Roles.Unauthorized
+  public doctorType?: string
 }

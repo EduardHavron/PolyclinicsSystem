@@ -197,13 +197,18 @@ namespace PolyclinicsSystemBackend
             {
                 var createPowerUser = await userManager.CreateAsync(adminUser, adminUserPassword);
                 if (createPowerUser.Succeeded)
+                {
+                    var result = await userManager.AddToRoleAsync(adminUser, "Admin");
+                    if (!result.Succeeded)
+                        logger.LogWarning("Failed to bind {Role} role to admin user", "Admin");
                     //here we tie the new user to the role
-                    foreach (var roleName in roleNames)
-                    {
-                        var result = await userManager.AddToRoleAsync(adminUser, roleName);
-                        if (!result.Succeeded)
-                            logger.LogWarning("Failed to bind {Role} role to admin user", roleName);
-                    }
+                    // foreach (var roleName in roleNames)
+                    // {
+                    //     var result = await userManager.AddToRoleAsync(adminUser, roleName);
+                    //     if (!result.Succeeded)
+                    //         logger.LogWarning("Failed to bind {Role} role to admin user", roleName);
+                    // }
+                }
                 else
                     logger.LogWarning("Failed to create admin user");
             }

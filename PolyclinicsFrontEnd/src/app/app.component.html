@@ -1,48 +1,60 @@
-<mat-spinner
-  *ngIf="'default' | swIsLoading | async"
-  mode="indeterminate"
-  color="warn"
-  style="position: absolute; top: 0;">
-</mat-spinner>
-<mat-toolbar>
-  <mat-toolbar-row class="header">
+<mat-toolbar color="primary">
+  <mat-toolbar-row class="header ">
     <div class="header-left">
       <div class="header-item" *ngIf="!this.isAuthorized" routerLink="/authorize/login">
-        <span class="header-item-text">Authorize</span>
+        <span class="header-item-text">AUTHORIZE</span>
+        <mat-icon>login</mat-icon>
       </div>
       <div class="header-item" *ngIf="!this.isAuthorized" routerLink="/authorize/register">
-        <span class="header-item-text">Register</span>
-        <mat-icon></mat-icon>
+        <span class="header-item-text">REGISTER</span>
+        <mat-icon>how_to_reg</mat-icon>
       </div>
 
-      <div class="header-item" *ngIf="this.isAuthorized">
-        <span class="header-item-text">Profile</span>
+      <div class="header-item" *ngIf="this.isPatient || this.isDoctor">
+        <span class="header-item-text">PROFILE</span>
         <mat-icon class="header-item-image">account_circle</mat-icon>
       </div>
 
-      <div class="header-item" *ngIf="this.isDoctor">
-        <span class="header-item-text">My appointments</span>
+      <div class="header-item" *ngIf="this.isDoctor || this.isPatient">
+        <span class="header-item-text">MY APPOINTMENTS</span>
         <mat-icon class="header-item-image">event</mat-icon>
       </div>
+      <div class="header-item" *ngIf="this.isAdmin">
+        <button class="header-item header-item-text" mat-button [matMenuTriggerFor]="menu">ADMIN MENU</button>
+        <mat-menu #menu="matMenu">
+          <div mat-menu-item class="header-item">
+            <span class="header-item-text-small">APPOINTMENTS AS DOCTOR</span>
+            <mat-icon class="header-item-image">event</mat-icon>
+          </div>
 
-      <div class="header-item" *ngIf="this.isPatient">
-        <span class="header-item-text">My appointments</span>
-        <mat-icon class="header-item-image">event</mat-icon>
-      </div>
-      <div class="header-item" *ngIf="this.isPatient">
-        <span class="header-item-text">New appointment</span>
-        <mat-icon class="header-item-image">schedule_send</mat-icon>
+          <div mat-menu-item class="header-item">
+            <span class="header-item-text-small">APPOINTMENTS AS PATIENT</span>
+            <mat-icon class="header-item-image">event</mat-icon>
+          </div>
+
+          <div mat-menu-item class="header-item" routerLink="/admin/register">
+            <span class="header-item-text-small">REGISTER DOCTOR</span>
+            <mat-icon class="header-item-image">event</mat-icon>
+          </div>
+        </mat-menu>
       </div>
     </div>
     <div class="header-right">
-      <div class="header-item" *ngIf="this.isAuthorized">
-        <span class="header-item-text" (click)="logout()">Logout</span>
+      <div class="header-item" *ngIf="this.isAuthorized" (click)="logout()">
+        <span class="header-item-text">LOGOUT</span>
         <mat-icon class="header-item-image">logout</mat-icon>
       </div>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
+<div>
+  <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate"
+                    *ngIf="('app' | swIsLoading | async)"></mat-progress-bar>
+</div>
 <router-outlet>
 
 </router-outlet>
+
+
+
 
