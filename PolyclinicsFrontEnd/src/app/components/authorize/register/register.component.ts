@@ -78,7 +78,7 @@ export class RegisterComponent implements OnInit {
       registerModel.email = val.email
       registerModel.password = val.password
       registerModel.firstName = val.firstName
-      registerModel.lastName = val.firstName
+      registerModel.lastName = val.lastName
       if (this.role === Roles.Doctor)
         registerModel.doctorType = val.doctorType
         this.authService.signUp(registerModel, this.role === Roles.Patient)
@@ -94,7 +94,12 @@ export class RegisterComponent implements OnInit {
 
               this.router.navigate([`/home/${route}`])
                 .then(() => {
-                  this.snackBar.open(`Successfully registered user ${val.email} ${this.role === Roles.Patient ? 'and authorized' : ''}`)
+                  this.snackBar.open(`Successfully registered user ${val.email}
+                  ${this.role === Roles.Patient ? 'and authorized' : ''}`
+                  , 'Information',
+                    {
+                      duration: 5000
+                    })
                 });
             },
             error => {

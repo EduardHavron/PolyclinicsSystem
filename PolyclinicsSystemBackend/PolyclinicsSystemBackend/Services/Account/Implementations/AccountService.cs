@@ -60,7 +60,9 @@ namespace PolyclinicsSystemBackend.Services.Account.Implementations
             var user = new User
             {
                 UserName = registerDto.Email.ToUpper(),
-                Email = registerDto.Email
+                Email = registerDto.Email,
+                Name = registerDto.FirstName,
+                Surname = registerDto.LastName
             };
 
             _logger.LogInformation("Creating user with following email {User}", user.Email);

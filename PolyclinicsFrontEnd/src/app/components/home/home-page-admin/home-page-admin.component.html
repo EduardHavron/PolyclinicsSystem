@@ -15,7 +15,7 @@
           <span class="home-page-admin-text-medium">No doctors founded for now</span>
         </div>
       </div>
-      <div *ngIf="true" class="home-page-admin-table-container">
+      <div *ngIf="this.dataSource != null && this.dataSource.length > 0" class="home-page-admin-table-container">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
           <!--- Note that these columns can be defined in any order.
