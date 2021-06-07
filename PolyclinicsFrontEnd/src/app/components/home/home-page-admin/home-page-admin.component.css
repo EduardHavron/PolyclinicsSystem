@@ -1,0 +1,63 @@
+.home-page-admin-container {
+  width: 100%;
+  height: 93vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  justify-content: space-around;
+}
+
+.home-page-admin-content {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  position: relative;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  -webkit-box-shadow: -1px 5px 30px 10px rgba(18, 18, 18, 1);;
+  box-shadow: -1px 5px 30px 10px rgba(18, 18, 18, 1);;
+}
+
+.home-page-admin-greetings-container {
+}
+
+.home-page-admin-greetings {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page-admin-greetings span {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.home-page-admin-text-big {
+  font-size: 40px;
+}
+
+.home-page-admin-text-medium {
+  font-size: 12px;
+  color: black;
+}
+
+.home-page-admin-greetings .home-page-admin-text-medium {
+  font-size: 30px;
+  margin-left: 15%
+}
+
+.home-page-admin-image {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  margin: 0;
+}
+
+.home-page-admin-image > img {
+  width: inherit;
+  height: inherit;
+}

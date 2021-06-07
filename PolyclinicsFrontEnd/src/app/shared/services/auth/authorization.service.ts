@@ -8,6 +8,7 @@ import {Role} from "../../static/role";
 import {Login} from "../../models/authorize/login";
 import {Register} from "../../models/register/register";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {Doctor} from "../../models/doctor/doctor";
 
 @Injectable({
   providedIn: 'root'
@@ -86,6 +87,10 @@ export class AuthorizationService {
           error => {
           })
       );
+  }
+
+  getDoctors(): Observable<Array<Doctor>> {
+    return this.http.get<Array<Doctor>>(this.url + 'getDoctors')
   }
 
 

@@ -5,6 +5,7 @@ import {NotFoundComponent} from "./components/not-found/not-found.component";
 import {UnauthGuard} from "./shared/guard/unauth/unauth.guard";
 import {AuthGuard} from "./shared/guard/auth/auth.guard";
 import {RegisterComponent} from "./components/authorize/register/register.component";
+import {AdminGuard} from "./shared/guard/admin/admin.guard";
 
 const routes: Routes = [
   {
@@ -20,8 +21,11 @@ const routes: Routes = [
     canActivate:  [AuthGuard]
   },
   {
-    path: 'admin/register',
-    component: RegisterComponent
+    path: 'admin',
+    loadChildren: () => import('./components/admin/admin/admin.module')
+      .then(m => m.AdminModule),
+    canLoad: [AdminGuard],
+    canActivate: [AdminGuard]
   },
   {
     path: 'authorize',

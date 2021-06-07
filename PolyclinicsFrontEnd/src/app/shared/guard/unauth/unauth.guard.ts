@@ -21,29 +21,20 @@ export class UnauthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.currentUser == null || this.currentUser.token.length === 0) {
-      return true;
-    }
-    else {
-
-    }
-    this.router.navigate(['/home'])
-      .then(() => {
-        this._snackBar.open(`You already authorized`,
-          "Information", {
-          duration: 5000
-          })
-      });
-    return false;
+    return this.verifyAccess();
   }
 
   canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean {
+    return this.verifyAccess()
+  }
 
+  private verifyAccess() {
     if (this.currentUser == null || this.currentUser.token.length === 0) {
       return true;
-    }
+    } else {
 
-    this.router.navigate(['/dashboard'])
+    }
+    this.router.navigate(['/home'])
       .then(() => {
         this._snackBar.open(`You already authorized`,
           "Information", {

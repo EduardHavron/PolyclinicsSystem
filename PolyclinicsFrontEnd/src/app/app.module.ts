@@ -4,7 +4,7 @@ import {MatToolbarModule} from '@angular/material/toolbar'
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {RouterModule} from "@angular/router";
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatIconModule} from '@angular/material/icon';
@@ -22,6 +22,8 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
 import { HomePageAdminComponent } from './components/home/home-page-admin/home-page-admin.component';
 import { HomePagePatientComponent } from './components/home/home-page-patient/home-page-patient.component';
+import {MatTableModule} from "@angular/material/table";
+import {JwtInterceptor} from "./shared/interceptors/jwt/jwt.interceptor";
 
 
 @NgModule({
@@ -36,20 +38,21 @@ import { HomePagePatientComponent } from './components/home/home-page-patient/ho
     BrowserAnimationsModule,
     MatSnackBarModule,
     HttpClientModule,
-    MatToolbarModule,
     RouterModule,
     LayoutModule,
     RouterModule,
     AppRoutingModule,
-    MatCardModule,
     IsLoadingModule,
     MatProgressBarModule,
     MatIconModule,
-    ReactiveFormsModule,
     MatMenuModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTableModule,
+    MatToolbarModule
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

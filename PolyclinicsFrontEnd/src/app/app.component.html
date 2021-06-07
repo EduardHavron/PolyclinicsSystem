@@ -38,6 +38,11 @@
           </div>
         </mat-menu>
       </div>
+
+      <div class="header-item" *ngIf="this.isAdmin" routerLink="/home/admin">
+        <span class="header-item-text">HOME</span>
+        <mat-icon class="header-item-image">admin_panel_settings</mat-icon>
+      </div>
     </div>
     <div class="header-right">
       <div class="header-item" *ngIf="this.isAuthorized" (click)="logout()">

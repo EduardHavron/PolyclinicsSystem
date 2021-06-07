@@ -3,22 +3,25 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/com
 import {Observable} from 'rxjs';
 import {environment} from '../../../../environments/environment';
 import {AuthorizationService} from "../../services/auth/authorization.service";
+import {User} from "../../models/user/User";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
+  private currentUser: User | null
   constructor(private authenticationService: AuthorizationService) {
+    this.currentUser = null
+    this.authenticationService.currentUser.subscribe(user => {
+      this.currentUser = user
+    })
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const currentUser = this.authenticationService
-      .currentUserSubject
-      .getValue();
     const isLoggedIn = this.authenticationService.isAuthorized
     const isApiUrl = request.url.startsWith(environment.apiUrl);
     if (isLoggedIn && isApiUrl) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${currentUser.token}`
+          Authorization: `Bearer ${this.currentUser?.token}`
         }
       });
     }
