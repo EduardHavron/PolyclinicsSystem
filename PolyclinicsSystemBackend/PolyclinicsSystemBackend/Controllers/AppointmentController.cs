@@ -37,20 +37,28 @@ namespace PolyclinicsSystemBackend.Controllers
             var result = await _appointmentService.GetAppointmentsForDoctor(doctorId, includeDiagnose);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
+
+        [HttpGet]
+        [Route("getAppointmentsPatient/{patientId}")]
+        public async Task<IActionResult> GetAppointmentsForPatient(string patientId, bool includeDiagnose)
+        {
+            var result = await _appointmentService.GetAppointmentsForPatient(patientId, includeDiagnose);
+            return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
+        }
         
         [HttpPost]
         [Authorize(Roles = "Patient,Admin")]
         [Route("create")]
-        public async Task<IActionResult> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate)
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentDtoPost appointmentDtoPost)
         {
-            var result = await _appointmentService.CreateAppointment(doctorId, patientId, appointmentDate);
+            var result = await _appointmentService.CreateAppointment(appointmentDtoPost);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
         
         [HttpPatch]
         [Authorize(Roles = "Patient,Admin")]
-        [Route("reschedule")]
-        public async Task<IActionResult> RescheduleAppointment(int appointmentId, DateTime newDate)
+        [Route("reschedule/{appointmentId}")]
+        public async Task<IActionResult> RescheduleAppointment(int appointmentId, [FromBody] DateTime newDate)
         {
             var result = await _appointmentService.RescheduleAppointment(appointmentId, newDate);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
@@ -58,7 +66,7 @@ namespace PolyclinicsSystemBackend.Controllers
         
         [HttpPatch]
         [Authorize(Roles = "Doctor,Admin")]
-        [Route("start")]
+        [Route("start/{appointmentId}")]
         public async Task<IActionResult> StartAppointment(int appointmentId)
         {
             var result = await _appointmentService.StartAppointment(appointmentId);
@@ -67,7 +75,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPatch]
         [Authorize(Roles = "Doctor,Admin")]
-        [Route("finalize")]
+        [Route("finalize/{appointmentId}")]
         public async Task<IActionResult> FinalizeAppointment(int appointmentId)
         {
             var result = await _appointmentService.FinalizeAppointment(appointmentId);
@@ -76,7 +84,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "Patient,Admin")]
-        [Route("cancel")]
+        [Route("cancel/{appointmentId}")]
         public async Task<IActionResult> CancelAppointment(int appointmentId)
         {
             var result = await _appointmentService.CancelAppointment(appointmentId);

@@ -6,7 +6,7 @@ import {IsLoadingService} from "@service-work/is-loading";
 import {MyErrorStateMatcher} from "../../../shared/validators/my-error-state-matcher";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {User} from "../../../shared/models/user/User";
-import {Role} from "../../../shared/static/role";
+import {Role} from "../../../shared/static/role/role";
 import {Roles} from "../../../shared/enums/roles";
 
 

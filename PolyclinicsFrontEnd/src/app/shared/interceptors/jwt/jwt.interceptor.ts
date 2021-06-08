@@ -10,12 +10,13 @@ export class JwtInterceptor implements HttpInterceptor {
   private currentUser: User | null
   constructor(private authenticationService: AuthorizationService) {
     this.currentUser = null
-    this.authenticationService.currentUser.subscribe(user => {
-      this.currentUser = user
-    })
+
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    let sub = this.authenticationService.currentUser.subscribe(user => {
+      this.currentUser = user
+    })
     const isLoggedIn = this.authenticationService.isAuthorized
     const isApiUrl = request.url.startsWith(environment.apiUrl);
     if (isLoggedIn && isApiUrl) {
@@ -25,7 +26,7 @@ export class JwtInterceptor implements HttpInterceptor {
         }
       });
     }
-
+    sub.unsubscribe()
     return next.handle(request);
   }
 }

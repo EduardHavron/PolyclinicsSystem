@@ -1,4 +1,4 @@
-import {Roles} from "../enums/roles";
+import {Roles} from "../../enums/roles";
 
 export class Role {
   public static readonly unauthorized = "Unauthorized"
@@ -28,7 +28,7 @@ export class Role {
       case Roles.Patient:
         return Role.patient
       default:
-        throw Role.unauthorized
+        return Role.unauthorized
     }
   }
 }

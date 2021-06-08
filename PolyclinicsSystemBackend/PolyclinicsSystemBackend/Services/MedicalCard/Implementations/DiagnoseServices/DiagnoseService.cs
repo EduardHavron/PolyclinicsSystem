@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using PolyclinicsSystemBackend.Data;
 using PolyclinicsSystemBackend.Data.Entities.MedicalCard;
 using PolyclinicsSystemBackend.Dtos.Appointment;
+using PolyclinicsSystemBackend.Dtos.Diagnose;
 using PolyclinicsSystemBackend.Dtos.Generics;
 using PolyclinicsSystemBackend.Dtos.MedicalCard;
 using PolyclinicsSystemBackend.Services.MedicalCard.Interface.Diagnose;
@@ -29,12 +30,12 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
         }
 
         public async Task<GenerisResult<string, MedicalCardDto>> AddDiagnoseToCard(int appointmentId,
-            int medicalCardId, string diagnose)
+            DiagnoseDtoPost diagnoseDtoPost)
         {
             _logger.LogInformation("Adding diagnose to med card with Id {Id} using appointment with Id {AppointmentId}"
-                , medicalCardId, appointmentId);
+                , diagnoseDtoPost.MedicalCardId, appointmentId);
 
-            if (diagnose == string.Empty)
+            if (diagnoseDtoPost.Diagnose == string.Empty)
             {
                 _logger.LogError("Diagnose cannot be empty");
                 return new GenerisResult<string, MedicalCardDto>
@@ -71,21 +72,21 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
             var medicalCardExist =
                 await _appDbContext.MedicalCards
                     .AsNoTracking()
-                    .AnyAsync(medCard => medCard.MedicalCardId == medicalCardId);
+                    .AnyAsync(medCard => medCard.MedicalCardId == diagnoseDtoPost.MedicalCardId);
             if (medicalCardExist == false)
             {
-                _logger.LogError("Medical card with Id {Id} doesn't exist in database", medicalCardId);
+                _logger.LogError("Medical card with Id {Id} doesn't exist in database", diagnoseDtoPost.MedicalCardId);
                 return new GenerisResult<string, MedicalCardDto>
                 {
                     IsSuccess = false,
-                    Errors = new[] {$"Medical card with Id {medicalCardId} doesn't exist in database"}
+                    Errors = new[] {$"Medical card with Id {diagnoseDtoPost.MedicalCardId} doesn't exist in database"}
                 };
             }
             var diagnoseObject = new Diagnose
             {
                 DiagnoseDate = DateTime.Now,
-                DiagnoseInfo = diagnose,
-                MedicalCardId = medicalCardId
+                DiagnoseInfo = diagnoseDtoPost.Diagnose,
+                MedicalCardId = diagnoseDtoPost.MedicalCardId
             };
             _logger.LogInformation("Adding diagnose to database");
             var result = await _appDbContext.Diagnoses.AddAsync(diagnoseObject);
@@ -103,7 +104,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
                     .ThenInclude(diagnoseEntity =>
                         diagnoseEntity.Treatment)
                     .FirstOrDefaultAsync(medCard =>
-                        medCard.MedicalCardId == medicalCardId))
+                        medCard.MedicalCardId == diagnoseDtoPost.MedicalCardId))
             };
         }
 

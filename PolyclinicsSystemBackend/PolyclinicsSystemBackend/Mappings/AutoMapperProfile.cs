@@ -8,6 +8,7 @@ using PolyclinicsSystemBackend.Dtos.Account.Doctor;
 using PolyclinicsSystemBackend.Dtos.Account.Register;
 using PolyclinicsSystemBackend.Dtos.Appointment;
 using PolyclinicsSystemBackend.Dtos.Chat;
+using PolyclinicsSystemBackend.Dtos.Diagnose;
 using PolyclinicsSystemBackend.Dtos.MedicalCard;
 
 namespace PolyclinicsSystemBackend.Mappings
@@ -24,6 +25,8 @@ namespace PolyclinicsSystemBackend.Mappings
             CreateMap<User, RegisterDto>().ReverseMap();
             CreateMap<User, AuthorizeDto>().ReverseMap();
             CreateMap<User, DoctorDto>().ReverseMap();
+            CreateMap<AppointmentDtoPost, Appointment>().ReverseMap();
+            CreateMap<DiagnoseDtoPost, Diagnose>().ReverseMap();
         }
     }
 }

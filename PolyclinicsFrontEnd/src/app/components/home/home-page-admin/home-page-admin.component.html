@@ -9,10 +9,15 @@
   </div>
   <div class="home-page-admin-content">
     <div class="home-page-admin-content-main">
-      <div *ngIf="true" class="home-page-admin-image">
-        <img src="../../../../assets/no-data.png" alt="no data">
+      <div class="home-page-admin-image">
+        <img [src]="(this.dataSource == null || this.dataSource.length === 0) ? '../../../../assets/no-data.png' :
+         '../../../../assets/home-image-admin.png'" alt="data"/>
         <div class="home-page-admin-image-hint">
-          <span class="home-page-admin-text-medium">No doctors founded for now</span>
+          <span class="home-page-admin-text-medium">
+            <ng-container *ngIf="this.dataSource != null && this.dataSource.length > 0">
+
+            </ng-container>
+          </span>
         </div>
       </div>
       <div *ngIf="this.dataSource != null && this.dataSource.length > 0" class="home-page-admin-table-container">

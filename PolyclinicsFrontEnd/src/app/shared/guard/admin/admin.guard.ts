@@ -13,7 +13,7 @@ import {Observable} from 'rxjs';
 import {AuthorizationService} from "../../services/auth/authorization.service";
 import {User} from "../../models/user/User";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {Role} from "../../static/role";
+import {Role} from "../../static/role/role";
 import {Roles} from "../../enums/roles";
 
 @Injectable({

@@ -4,7 +4,6 @@ import {RouterModule, Routes} from "@angular/router";
 import {NotFoundComponent} from "./components/not-found/not-found.component";
 import {UnauthGuard} from "./shared/guard/unauth/unauth.guard";
 import {AuthGuard} from "./shared/guard/auth/auth.guard";
-import {RegisterComponent} from "./components/authorize/register/register.component";
 import {AdminGuard} from "./shared/guard/admin/admin.guard";
 
 const routes: Routes = [

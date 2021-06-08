@@ -1,5 +1,5 @@
 export class Doctor {
-  public doctorId: number = -1
+  public doctorId: string = ''
   public doctorType: string = ''
   public name: string = ''
   public surname: string = ''

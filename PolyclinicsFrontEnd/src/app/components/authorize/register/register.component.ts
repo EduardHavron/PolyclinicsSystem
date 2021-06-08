@@ -8,7 +8,7 @@ import {MyErrorStateMatcher} from "../../../shared/validators/my-error-state-mat
 import {Register} from "../../../shared/models/register/register";
 import {Roles} from "../../../shared/enums/roles";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {Role} from "../../../shared/static/role";
+import {Role} from "../../../shared/static/role/role";
 import {User} from "../../../shared/models/user/User";
 
 @Component({

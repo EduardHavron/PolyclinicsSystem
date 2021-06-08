@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HomePageAdminComponent } from './home-page-admin.component';
+import {HomePageAdminComponent} from './home-page-admin.component';
 
 describe('HomePageAdminComponent', () => {
   let component: HomePageAdminComponent;

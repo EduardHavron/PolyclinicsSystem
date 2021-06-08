@@ -41,9 +41,13 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var appointment = includeDiagnose
                 ? await _appDbContext.Appointments
                     .AsNoTracking()
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
                     .FirstOrDefaultAsync(appointmentEntity => appointmentEntity.AppointmentId == appointmentId)
                 : await _appDbContext.Appointments
                     .AsNoTracking()
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
                     .Include(appointmentEntity => appointmentEntity.Diagnose)
                     .FirstOrDefaultAsync(appointmentEntity => appointmentEntity.AppointmentId == appointmentId);
             if (appointment is not null)
@@ -68,10 +72,14 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                 ? await _appDbContext.Appointments
                     .AsNoTracking()
                     .Where(appointmentEntity => appointmentEntity.DoctorId == doctorId)
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
                     .ToListAsync()
                 : await _appDbContext.Appointments
                     .AsNoTracking()
                     .Include(appointmentEntity => appointmentEntity.Diagnose)
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
                     .Where(appointmentEntity => appointmentEntity.DoctorId == doctorId)
                     .ToListAsync();
             if (appointments is not null) return
@@ -87,36 +95,66 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                 Errors = new []{$"No appointments for doctor with Id {doctorId} was founded"}
             };
         }
-
-        public async Task<GenerisResult<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate)
+        public async Task<GenerisResult<string, List<AppointmentDto>>> GetAppointmentsForPatient(string patientId, bool includeDiagnose)
         {
-            var doctor = await _userManager.FindByIdAsync(doctorId);
+            _logger.LogInformation("Getting all appointments for doctor with Id {Id}", patientId);
+            var appointments = includeDiagnose
+                ? await _appDbContext.Appointments
+                    .AsNoTracking()
+                    .Where(appointmentEntity => appointmentEntity.PatientId == patientId)
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
+                    .ToListAsync()
+                : await _appDbContext.Appointments
+                    .AsNoTracking()
+                    .Include(appointmentEntity => appointmentEntity.Diagnose)
+                    .Include(appointmentEntity => appointmentEntity.Doctor)
+                    .Include(appointmentEntity => appointmentEntity.Patient)
+                    .Where(appointmentEntity => appointmentEntity.PatientId == patientId)
+                    .ToListAsync();
+            if (appointments is not null) return
+                new GenerisResult<string, List<AppointmentDto>>
+                {
+                    IsSuccess = true,
+                    Result = _mapper.Map<List<AppointmentDto>>(appointments)
+                };
+            _logger.LogError("No appointments for patient with Id {Id} was founded", patientId);
+            return new GenerisResult<string, List<AppointmentDto>>
+            {
+                IsSuccess = false,
+                Errors = new []{$"No appointments for patient with Id {patientId} was founded"}
+            };
+        }
+
+        public async Task<GenerisResult<string, AppointmentDto>> CreateAppointment(AppointmentDtoPost appointmentDtoPost)
+        {
+            var doctor = await _userManager.FindByIdAsync(appointmentDtoPost.DoctorId);
             var doctorRoles = await _userManager.GetRolesAsync(doctor);
             if (doctor == null || !doctorRoles.Contains(Roles.Doctor.ToString()))
             {
                 _logger.LogError("User with Id {Id} was not founded or it doesn't belong to role {Role}",
-                    doctorId, Roles.Doctor.ToString());
+                    appointmentDtoPost.DoctorId, Roles.Doctor.ToString());
                 return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
-                    Errors = new []{$"User with Id {doctorId} was not founded or it doesn't belong to role {Roles.Doctor.ToString()}"}
+                    Errors = new []{$"User with Id {appointmentDtoPost.DoctorId} was not founded or it doesn't belong to role {Roles.Doctor.ToString()}"}
                 };
             }
-            var patient = await _userManager.FindByIdAsync(patientId);
+            var patient = await _userManager.FindByIdAsync(appointmentDtoPost.PatientId);
             var patientRoles = await _userManager.GetRolesAsync(patient);
             if (patient == null || !patientRoles.Contains(Roles.Patient.ToString()))
             {
                 _logger.LogError("User with Id {Id} was not founded or it doesn't belong to role {Role}",
-                    patientId, Roles.Patient.ToString());
+                    appointmentDtoPost.PatientId, Roles.Patient.ToString());
                 return new GenerisResult<string, AppointmentDto>
                 {
                     IsSuccess = false,
-                    Errors = new []{$"User with Id {patientId} was not founded or it doesn't belong to role {Roles.Patient.ToString()}"}
+                    Errors = new []{$"User with Id {appointmentDtoPost.PatientId} was not founded or it doesn't belong to role {Roles.Patient.ToString()}"}
                 };
             }
 
-            var strippedDate = appointmentDate.Date + new TimeSpan(appointmentDate.TimeOfDay.Hours,
-                appointmentDate.TimeOfDay.Minutes,
+            var strippedDate = appointmentDtoPost.AppointmentDate.Date + new TimeSpan(appointmentDtoPost.AppointmentDate.TimeOfDay.Hours,
+                appointmentDtoPost.AppointmentDate.TimeOfDay.Minutes,
                 0);
             var strippedDateNow = DateTime.Now + new TimeSpan(DateTime.Now.TimeOfDay.Hours,
                 DateTime.Now.TimeOfDay.Minutes,
@@ -133,7 +171,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             _logger.LogInformation("Checking if any appointments already exists with given datetime");
             var existingAppointment = await _appDbContext.Appointments
                 .AnyAsync(appointmentEntity => 
-                    appointmentEntity.DoctorId == doctorId &&(
+                    appointmentEntity.DoctorId == appointmentDtoPost.DoctorId &&(
                     appointmentEntity.AppointmentDate == strippedDate ||
                     appointmentEntity.AppointmentDate.AddMinutes(30) == strippedDate ||
                     appointmentEntity.AppointmentDate.AddMinutes(-30) == strippedDate));
@@ -149,8 +187,8 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var appointment = new Data.Entities.Appointment.Appointment
             {
                 AppointmentDate = strippedDate,
-                DoctorId = doctorId,
-                PatientId = patientId,
+                DoctorId = appointmentDtoPost.DoctorId,
+                PatientId = appointmentDtoPost.PatientId,
                 AppointmentStatus = AppointmentStatuses.Planned
             };
             _logger.LogInformation("Adding appointment to database");

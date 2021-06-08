@@ -12,8 +12,11 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Interface
 
         public Task<GenerisResult<string, List<AppointmentDto>>> GetAppointmentsForDoctor(string doctorId,
             bool includeDiagnose);
+
+        public Task<GenerisResult<string, List<AppointmentDto>>> GetAppointmentsForPatient(string patientId,
+            bool includeDiagnose);
         
-        public Task<GenerisResult<string, AppointmentDto>> CreateAppointment(string doctorId, string patientId, DateTime appointmentDate);
+        public Task<GenerisResult<string, AppointmentDto>> CreateAppointment(AppointmentDtoPost appointmentDtoPost);
 
         public Task<GenerisResult<string, AppointmentDto>> RescheduleAppointment(int appointmentId, DateTime newDate);
 

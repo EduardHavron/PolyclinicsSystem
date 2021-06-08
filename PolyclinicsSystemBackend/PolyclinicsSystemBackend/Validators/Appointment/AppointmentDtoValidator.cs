@@ -7,9 +7,9 @@ namespace PolyclinicsSystemBackend.Validators.Appointment
     {
         public AppointmentDtoValidator()
         {
-            RuleFor(dto => dto.DoctorId).NotEmpty();
+            RuleFor(dto => dto.Doctor).NotNull();
 
-            RuleFor(dto => dto.PatientId).NotEmpty();
+            RuleFor(dto => dto.Patient).NotNull();
 
             RuleFor(dto => dto.AppointmentDate).NotEmpty();
         }

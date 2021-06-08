@@ -21,7 +21,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPost]
         [Route("create/{diagnoseId}")]
-        public async Task<IActionResult> AddTreatmentToDiagnose(int diagnoseId, string treatment)
+        public async Task<IActionResult> AddTreatmentToDiagnose(int diagnoseId,[FromBody]  string treatment)
         {
             var result = await _treatmentService.AddTreatmentToDiagnose(diagnoseId, treatment);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
@@ -29,7 +29,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPatch]
         [Route("update/{treatmentId}")]
-        public async Task<IActionResult> UpdateTreatment(int treatmentId, string treatment)
+        public async Task<IActionResult> UpdateTreatment(int treatmentId, [FromBody]  string treatment)
         {
             var result = await _treatmentService.UpdateTreatment(treatmentId, treatment);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);

@@ -31,7 +31,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPatch]
         [Route("update/{medicalCardId}")]
-        public async Task<IActionResult> UpdateMedicalCard(int medicalCardId, MedicalCardDto medicalCard)
+        public async Task<IActionResult> UpdateMedicalCard(int medicalCardId, [FromBody] MedicalCardDto medicalCard)
         {
             var result = await _medicalCardService.UpdateMedicalCard(medicalCard);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);

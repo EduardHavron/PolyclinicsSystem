@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PolyclinicsSystemBackend.Dtos.Diagnose;
 using PolyclinicsSystemBackend.Services.MedicalCard.Interface.Diagnose;
 
 namespace PolyclinicsSystemBackend.Controllers
@@ -20,15 +21,15 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpPost]
         [Route("create/{appointmentId}")]
-        public async Task<IActionResult> AddDiagnoseToCard(int appointmentId, int medicalCardId, string diagnose)
+        public async Task<IActionResult> AddDiagnoseToCard(int appointmentId,[FromBody] DiagnoseDtoPost diagnoseDtoPost)
         {
-            var result = await _diagnoseService.AddDiagnoseToCard(appointmentId, medicalCardId, diagnose);
+            var result = await _diagnoseService.AddDiagnoseToCard(appointmentId, diagnoseDtoPost);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
 
         [HttpPatch]
         [Route("update/{diagnoseId}")]
-        public async Task<IActionResult> UpdateDiagnose(int diagnoseId, string diagnose)
+        public async Task<IActionResult> UpdateDiagnose(int diagnoseId, [FromBody] string diagnose)
         {
             var result = await _diagnoseService.UpdateDiagnose(diagnoseId, diagnose);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);

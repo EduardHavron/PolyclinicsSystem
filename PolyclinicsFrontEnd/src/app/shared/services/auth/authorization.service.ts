@@ -4,10 +4,9 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
 import {User} from "../../models/user/User";
-import {Role} from "../../static/role";
+import {Role} from "../../static/role/role";
 import {Login} from "../../models/authorize/login";
 import {Register} from "../../models/register/register";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {Doctor} from "../../models/doctor/doctor";
 
 @Injectable({
@@ -17,8 +16,7 @@ export class AuthorizationService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>
   private url = environment.apiUrl + 'account/';
-  constructor(private http: HttpClient,
-              private _snackBar: MatSnackBar) {
+  constructor(private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject(JSON.parse(<string>localStorage.getItem('token')));
     this.currentUser = this.currentUserSubject.asObservable()
   }

@@ -1,0 +1,94 @@
+table {
+  width: 80%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.home-page-admin-container {
+  width: 100%;
+  height: 93vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  justify-content: space-around;
+}
+
+.home-page-admin-content {
+  padding: 5vh;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  background-color: #FFFFFF;
+  border-radius: 5px;
+  -webkit-box-shadow: -1px 5px 30px 10px rgba(18, 18, 18, 1);;
+  box-shadow: -1px 5px 30px 10px rgba(18, 18, 18, 1);;
+}
+
+.home-page-admin-content-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-page-admin-table-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-page-admin-greetings-container {
+}
+
+.home-page-admin-greetings {
+  display: flex;
+  flex-direction: column;
+  text-align:center
+}
+
+.home-page-admin-greetings span {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.home-page-admin-text-big {
+  font-size: 40px;
+  font-family: 'Inconsolata', monospace;
+}
+
+.home-page-admin-text-medium {
+  font-size: 12px;
+  color: black;
+  font-family: 'Inconsolata', monospace;
+}
+
+.home-page-admin-greetings .home-page-admin-text-medium {
+  font-size: 30px;
+}
+
+.home-page-admin-image {
+  width: 350px;
+
+  display: inline-block;
+
+  margin: 0;
+}
+
+.home-page-admin-image > img {
+  width: inherit;
+  height: inherit;
+}
+
+.home-page-admin-actions {
+  margin-bottom: 20px;
+}
+
+.home-page-admin-image-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
