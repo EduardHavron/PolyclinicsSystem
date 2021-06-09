@@ -97,3 +97,9 @@ table {
   flex-direction: column;
   align-items: center;
 }
+
+.login-form-loading-bar {
+  position: absolute;
+  bottom: 0.5%;
+}
+
