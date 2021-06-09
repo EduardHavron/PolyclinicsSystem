@@ -65,6 +65,13 @@
         </table>
       </div>
     </div>
-    <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate" *ngIf="('homeDoctor' | swIsLoading | async)"></mat-progress-bar>
+    <div class="home-page-admin-actions">
+      <div class="home-page-admin-action">
+        <button mat-fab color="primary" routerLink="/appointments/schedule" title="Schedule new appointment">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate" *ngIf="('homePatient' | swIsLoading | async)"></mat-progress-bar>
   </div>
 </div>

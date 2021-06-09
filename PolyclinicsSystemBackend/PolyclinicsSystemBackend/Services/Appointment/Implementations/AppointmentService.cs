@@ -172,9 +172,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var existingAppointment = await _appDbContext.Appointments
                 .AnyAsync(appointmentEntity => 
                     appointmentEntity.DoctorId == appointmentDtoPost.DoctorId &&(
-                    appointmentEntity.AppointmentDate == strippedDate ||
-                    appointmentEntity.AppointmentDate.AddMinutes(30) == strippedDate ||
-                    appointmentEntity.AppointmentDate.AddMinutes(-30) == strippedDate));
+                    appointmentEntity.AppointmentDate == strippedDate));
             if (existingAppointment)
             {
                 _logger.LogError("Appointment with given date is already setted for this doctor");
@@ -245,9 +243,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var existingAppointment = await _appDbContext.Appointments
                 .AnyAsync(appointmentEntity => 
                     appointmentEntity.DoctorId == appointment.DoctorId &&(
-                        appointmentEntity.AppointmentDate == strippedDate ||
-                        appointmentEntity.AppointmentDate.AddMinutes(30) == strippedDate ||
-                        appointmentEntity.AppointmentDate.AddMinutes(-30) == strippedDate));
+                        appointmentEntity.AppointmentDate == strippedDate));
             if (existingAppointment)
             {
                 _logger.LogError("Appointment with given date is already setted for this doctor");

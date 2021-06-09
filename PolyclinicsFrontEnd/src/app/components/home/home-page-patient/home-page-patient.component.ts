@@ -6,6 +6,7 @@ import {AppointmentsService} from "../../../shared/services/appointments/appoint
 import {AuthorizationService} from "../../../shared/services/auth/authorization.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
+import {IsLoadingService} from "@service-work/is-loading";
 
 @Component({
   selector: 'app-home-page-patient',
@@ -22,10 +23,12 @@ export class HomePagePatientComponent implements OnInit {
   constructor(private appointmentService: AppointmentsService,
               private authService: AuthorizationService,
               private snackBar: MatSnackBar,
-              private router: Router) {
+              private router: Router,
+              private isLoadingService: IsLoadingService) {
     this.dataSource = null
     this.appointments = null
     this.user = null
+    this.isLoadingService.add({key: 'homePatient'})
     this.authService.currentUser.subscribe(user => {
         this.user = user
         if(this.user != null && this.user) {
@@ -33,8 +36,10 @@ export class HomePagePatientComponent implements OnInit {
             .subscribe(appointments => {
                 this.appointments = appointments
                 this.dataSource = appointments.filter(x => new Date(x.appointmentDate).getDate() === new Date().getDate())
+                this.isLoadingService.remove({key: 'homePatient'})
               },
               error => {
+              this.isLoadingService.remove({key: 'homePatient'})
                 this.snackBar.open("Cannot load appointments", "Error", {
                   duration: 5000
                 })
@@ -42,6 +47,7 @@ export class HomePagePatientComponent implements OnInit {
         }
       },
       error => {
+        this.isLoadingService.remove({key: 'homePatient'})
         this.snackBar.open("Cannot load current user", "Error",
           {
             duration: 5000

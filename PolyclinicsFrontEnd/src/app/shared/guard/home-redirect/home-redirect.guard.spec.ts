@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { HomeRedirectGuard } from './home-redirect.guard';
+import {HomeRedirectGuard} from './home-redirect.guard';
 
 describe('HomeRedirectGuard', () => {
   let guard: HomeRedirectGuard;

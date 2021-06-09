@@ -1,0 +1,66 @@
+<div class="schedule-container">
+  <mat-vertical-stepper [linear]="true" #stepper>
+    <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate"
+                      *ngIf="('schedule' | swIsLoading | async)"></mat-progress-bar>
+    <mat-step>
+      <form [formGroup]="doctorFormGroup">
+        <ng-template matStepLabel>Choose a doctor for appointment</ng-template>
+        <div fxLayout="row wrap" fxLayoutGap="16px grid" class="doctors-container">
+          <div [fxFlex]="(100/gridColumns) + '%'" fxFlex.xs="100%" fxFlex.sm="33%" *ngFor="let doctor of this.doctors">
+            <mat-card class="mat-elevation-z4">
+              <mat-card-header>
+                <mat-card-title>{{doctor.name + ' ' + doctor.surname}}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <span>
+                  {{doctor.doctorType}}
+                </span>
+              </mat-card-content>
+              <mat-card-actions class="doctor-actions">
+                <button color="primary" mat-raised-button (click)="chooseDoctor(doctor.id)">CHOOSE</button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="dateFormGroup" label="Choose date">
+      <form [formGroup]="dateFormGroup">
+        <mat-form-field appearance="fill">
+          <mat-label>Choose a date</mat-label>
+          <input formControlName="date" [disabled]="true" matInput [matDatepicker]="picker" [min]="minDate"
+                 [matDatepickerFilter]="validate" [max]="maxDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker [dateClass]="dateClass" #picker disabled="false"></mat-datepicker>
+        </mat-form-field>
+        <mat-card-actions class="doctor-actions">
+          <button color="warn" mat-raised-button matStepperPrevious>Back</button>
+          <button color="primary" mat-raised-button matStepperNext (click)="this.filterTimes()">Next</button>
+        </mat-card-actions>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Choose time</ng-template>
+      <p>Please choose free time to visit doctor. If no time suits you, try to set other date or other doctor</p>
+      <form [formGroup]="timeFormGroup">
+        <mat-form-field  appearance="fill">
+          <mat-label>Time</mat-label>
+          <mat-select required formControlName="time">
+            <mat-option *ngFor="let time of availableTimes" [value]="time.value">
+              {{time.view}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Done</ng-template>
+      <p>You are now done.</p>
+      <div class="buttons">
+        <button color="accent" mat-raised-button matStepperPrevious>Back</button>
+        <button color="warn" mat-raised-button (click)="stepper.reset()">Reset</button>
+        <button color="primary" mat-raised-button (click)="submitAppointment()">Schedule</button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+</div>

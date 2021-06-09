@@ -51,6 +51,7 @@ namespace PolyclinicsSystemBackend.Controllers
         [Route("create")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentDtoPost appointmentDtoPost)
         {
+            appointmentDtoPost.AppointmentDate = appointmentDtoPost.AppointmentDate.ToLocalTime();
             var result = await _appointmentService.CreateAppointment(appointmentDtoPost);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }

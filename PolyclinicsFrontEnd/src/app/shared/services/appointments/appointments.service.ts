@@ -24,8 +24,11 @@ export class AppointmentsService {
     return this.http.get<Array<Appointment>>(this.url + `getAppointmentsPatient/${patientId}?includeDiagnose=${includeDiagnose}`)
   }
 
-  public createAppointment(doctorId: string, patientId: string, appointmentDate: string): Observable<Appointment> {
-    return this.http.post<Appointment>(this.url + `create`, {doctorId, patientId, appointmentDate})
+  public createAppointment(doctorId: string, patientId: string, appointmentDate: Date): Observable<Appointment> {
+    return this.http.post<Appointment>(this.url + `create`, {
+      doctorId,
+      patientId,
+      appointmentDate})
   }
 
   public rescheduleAppointment(appointmentId: number, newDate: string): Observable<Appointment> {

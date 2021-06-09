@@ -16,11 +16,14 @@
 }
 
 .header-item-text {
-  font-size: 20px;
+
+  font-size: 0.7em;
 }
 
 .header-item-text-small {
-  font-size: 14px;
+
+  font-size: 0.4em;
+
 }
 
 .header-left {

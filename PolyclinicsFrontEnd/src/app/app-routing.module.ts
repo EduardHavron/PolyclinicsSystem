@@ -13,6 +13,13 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'appointments',
+    loadChildren: () => import('./components/appointments/appointments/appointments.module')
+      .then(m => m.AppointmentsModule),
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'home',
     loadChildren: () => import('./components/home/home/home.module')
       .then(m => m.HomeModule),

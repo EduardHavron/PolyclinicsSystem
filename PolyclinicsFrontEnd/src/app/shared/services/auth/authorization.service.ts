@@ -96,5 +96,4 @@ export class AuthorizationService {
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
   }
-
 }
