@@ -18,7 +18,7 @@ export class HomePageDoctorComponent implements OnInit {
   public dataSource: Array<Appointment> | null
   private user: User | null
   public appointmentStatus = new AppointmentStatus()
-  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up']
+  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up', 'View','Time']
 
   constructor(private appointmentService: AppointmentsService,
               private authService: AuthorizationService,

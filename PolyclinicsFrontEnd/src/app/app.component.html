@@ -9,6 +9,10 @@
         <span class="header-item-text">REGISTER</span>
         <mat-icon>how_to_reg</mat-icon>
       </div>
+      <div class="header-item" *ngIf="this.isAuthorized" routerLink="/home">
+        <span class="header-item-text">HOME</span>
+        <mat-icon>home</mat-icon>
+      </div>
 
       <div class="header-item" *ngIf="this.isPatient || this.isDoctor">
         <span class="header-item-text">PROFILE</span>

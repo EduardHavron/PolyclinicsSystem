@@ -22,20 +22,48 @@ mat-vertical-stepper {
   box-shadow: -1px 5px 30px 10px rgba(18, 18, 18, 1);
 }
  .content {
-   padding: 16px;
+   padding: 1vh
  }
 
  .content > mat-card {
-   margin-bottom: 16px;
+   margin-bottom: 1.5vh
  }
 
  .doctors-container {
-   margin-top: 20px
+   margin-top: 2vh
  }
 
  .buttons {
-   width: 25%;
+   width: 50%;
    display: flex;
    flex-direction: row;
    justify-content: space-between;
+   margin-top: 2vh;
+   max-width: 400px;
+ }
+
+ .date-picker {
+   display: flex;
+   flex-direction: column;
+ }
+
+ button {
+   margin-left: 0.2vw;
+   margin-right: 0.2vw;
+ }
+
+ .mat-form-field {
+   width: 2.5vw;
+   max-width: 250px;
+   min-width: 150px
+ }
+
+ .date-picker-form {
+   margin-top: 1.5vh
+ }
+
+ .step-container {
+   display: flex;
+   flex-direction: column;
+
  }

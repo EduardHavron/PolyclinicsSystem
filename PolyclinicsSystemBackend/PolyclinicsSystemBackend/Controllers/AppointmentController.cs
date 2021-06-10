@@ -59,9 +59,10 @@ namespace PolyclinicsSystemBackend.Controllers
         [HttpPatch]
         [Authorize(Roles = "Patient,Admin")]
         [Route("reschedule/{appointmentId}")]
-        public async Task<IActionResult> RescheduleAppointment(int appointmentId, [FromBody] DateTime newDate)
+        public async Task<IActionResult> RescheduleAppointment(int appointmentId, [FromBody] RescheduleAppointmentDto newDate)
         {
-            var result = await _appointmentService.RescheduleAppointment(appointmentId, newDate);
+            newDate.NewDate = newDate.NewDate.ToLocalTime();
+            var result = await _appointmentService.RescheduleAppointment(appointmentId, newDate.NewDate);
             return result.IsSuccess ? Ok(result.Result) : BadRequest(result.Errors);
         }
         

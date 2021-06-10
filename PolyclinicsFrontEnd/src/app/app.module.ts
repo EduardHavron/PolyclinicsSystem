@@ -15,29 +15,37 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTableModule} from "@angular/material/table";
 import {JwtInterceptor} from "./shared/interceptors/jwt/jwt.interceptor";
+import { ViewAppointmentComponent } from './components/appointments/view-appointment/view-appointment.component';
+import { AllAppointmentsComponent } from './components/appointments/all-appointments/all-appointments.component';
+import {MatGridListModule} from "@angular/material/grid-list";
+import { ViewMedicalCardComponent } from './components/appointments/view-medical-card/view-medical-card.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    ViewAppointmentComponent,
+    AllAppointmentsComponent,
+    ViewMedicalCardComponent,
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatSnackBarModule,
-    HttpClientModule,
-    RouterModule,
-    LayoutModule,
-    RouterModule,
-    AppRoutingModule,
-    IsLoadingModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatTableModule,
-    MatToolbarModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatSnackBarModule,
+        HttpClientModule,
+        RouterModule,
+        LayoutModule,
+        RouterModule,
+        AppRoutingModule,
+        IsLoadingModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatTableModule,
+        MatToolbarModule,
+        MatGridListModule
+    ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     ],

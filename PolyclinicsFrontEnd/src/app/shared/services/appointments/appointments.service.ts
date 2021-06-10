@@ -31,8 +31,8 @@ export class AppointmentsService {
       appointmentDate})
   }
 
-  public rescheduleAppointment(appointmentId: number, newDate: string): Observable<Appointment> {
-    return this.http.patch<Appointment>(this.url + `reschedule/${appointmentId}`, {appointmentId, newDate})
+  public rescheduleAppointment(appointmentId: number, newDate: Date): Observable<Appointment> {
+    return this.http.patch<Appointment>(this.url + `reschedule/${appointmentId}`, {newDate})
   }
 
   public startAppointment(appointmentId: number): Observable<Appointment> {
