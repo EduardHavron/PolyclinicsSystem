@@ -8,7 +8,7 @@ import {MedicalCard} from "../../models/medical-card/medical-card";
   providedIn: 'root'
 })
 export class MedicalCardService {
-private url = environment + 'medCard/'
+private url = environment.apiUrl + 'medCard/'
   constructor(private http: HttpClient) { }
 
   public getMedCard(userId: string, includeDiagnose: boolean): Observable<MedicalCard> {

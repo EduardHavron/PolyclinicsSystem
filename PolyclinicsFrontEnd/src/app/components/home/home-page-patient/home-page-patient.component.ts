@@ -7,6 +7,7 @@ import {AuthorizationService} from "../../../shared/services/auth/authorization.
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
 import {IsLoadingService} from "@service-work/is-loading";
+import {AppointmentStatuses} from "../../../shared/enums/appointment-statuses";
 
 @Component({
   selector: 'app-home-page-patient',
@@ -18,7 +19,7 @@ export class HomePagePatientComponent implements OnInit {
   public dataSource: Array<Appointment> | null
   private user: User | null
   public appointmentStatus = new AppointmentStatus()
-  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up', 'Reschedule', 'View', 'Time']
+  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up', 'Reschedule', 'Cancel', 'View', 'Time']
 
   constructor(private appointmentService: AppointmentsService,
               private authService: AuthorizationService,
@@ -31,15 +32,17 @@ export class HomePagePatientComponent implements OnInit {
     this.isLoadingService.add({key: 'homePatient'})
     this.authService.currentUser.subscribe(user => {
         this.user = user
-        if(this.user != null && this.user) {
+        if (this.user != null && this.user) {
           this.appointmentService.getAppointmentsForPatient(this.user.id, true)
             .subscribe(appointments => {
                 this.appointments = appointments
-                this.dataSource = appointments.filter(x => new Date(x.appointmentDate).getDate() === new Date().getDate())
+                this.dataSource = appointments.filter(x => {
+                  return (new Date(x.appointmentDate).getDate() === new Date().getDate() && x.appointmentStatus !== AppointmentStatuses.Finalized)
+                })
                 this.isLoadingService.remove({key: 'homePatient'})
               },
               error => {
-              this.isLoadingService.remove({key: 'homePatient'})
+                this.isLoadingService.remove({key: 'homePatient'})
                 this.snackBar.open("Cannot load appointments", "Error", {
                   duration: 5000
                 })
@@ -53,6 +56,33 @@ export class HomePagePatientComponent implements OnInit {
             duration: 5000
           })
       })
+  }
+
+  public cancelAppointment(appointmentId: number) {
+    this.isLoadingService.add({key: 'homePatient'})
+    this.appointmentService.cancelAppointment(appointmentId)
+      .subscribe(() => {
+        if (this.dataSource != null) {
+          this.dataSource = this.dataSource.filter(x => {
+            return x.appointmentId !== appointmentId
+          })
+        }
+        this.snackBar.open("Appointment successfully canceled", "Information", {
+          duration: 5000
+          }
+        )
+        this.isLoadingService.remove({key: 'homePatient'})
+      },
+        () => {
+          this.snackBar.open("An error appeared while cancelling appointment", "Error", {
+              duration: 5000
+            }
+          )
+        })
+  }
+
+  public checkForCancelAbility(appointmentStatus: AppointmentStatuses) {
+    return appointmentStatus === AppointmentStatuses.Planned
   }
 
   ngOnInit(): void {

@@ -62,7 +62,13 @@
           <ng-container matColumnDef="Reschedule">
             <th mat-header-cell *matHeaderCellDef>Reschedule</th>
             <td mat-cell *matCellDef="let element">
-              <button mat-raised-button color="accent" [routerLink]="['/appointments/reschedule', element.appointmentId]">Reschedule</button>
+              <button mat-raised-button color="accent" [disabled]="!this.checkForCancelAbility(element.appointmentStatus)"  [routerLink]="['/appointments/reschedule', element.appointmentId]">Reschedule</button>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="Cancel">
+            <th mat-header-cell *matHeaderCellDef>Cancel</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button color="warn" [disabled]="!this.checkForCancelAbility(element.appointmentStatus)" (click)="this.cancelAppointment(element.appointmentId)">Cancel</button>
             </td>
           </ng-container>
           <ng-container matColumnDef="View">

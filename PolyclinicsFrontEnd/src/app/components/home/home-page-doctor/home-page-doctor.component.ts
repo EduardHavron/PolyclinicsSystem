@@ -7,6 +7,7 @@ import {AuthorizationService} from "../../../shared/services/auth/authorization.
 import {User} from "../../../shared/models/user/User";
 import {AppointmentStatus} from "../../../shared/static/appointment-status/appointment-status";
 import {IsLoadingService} from "@service-work/is-loading";
+import {AppointmentStatuses} from "../../../shared/enums/appointment-statuses";
 
 @Component({
   selector: 'app-home-page',
@@ -36,7 +37,9 @@ export class HomePageDoctorComponent implements OnInit {
           .subscribe(appointments => {
               this.isLoadingService.remove({key: 'homeDoctor'})
               this.appointments = appointments
-            this.dataSource = appointments.filter(x => new Date(x.appointmentDate).getDate() === new Date().getDate())
+            this.dataSource = appointments.filter(x => {
+              return (new Date(x.appointmentDate).getDate() === new Date().getDate() && x.appointmentStatus !== AppointmentStatuses.Finalized)
+            })
           },
             error => {
               this.isLoadingService.remove({key: 'homeDoctor'})

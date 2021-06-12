@@ -43,12 +43,13 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                     .AsNoTracking()
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
+                    .Include(appointmentEntity => appointmentEntity.Diagnose)
+                    .ThenInclude(diagnoseEntity => diagnoseEntity.Treatment)
                     .FirstOrDefaultAsync(appointmentEntity => appointmentEntity.AppointmentId == appointmentId)
                 : await _appDbContext.Appointments
                     .AsNoTracking()
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
-                    .Include(appointmentEntity => appointmentEntity.Diagnose)
                     .FirstOrDefaultAsync(appointmentEntity => appointmentEntity.AppointmentId == appointmentId);
             if (appointment is not null)
                 return new GenerisResult<string, AppointmentDto>
@@ -74,10 +75,11 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                     .Where(appointmentEntity => appointmentEntity.DoctorId == doctorId)
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
+                    .Include(appointmentEntity => appointmentEntity.Diagnose)
+                    .ThenInclude(diagnoseEntity => diagnoseEntity.Treatment)
                     .ToListAsync()
                 : await _appDbContext.Appointments
                     .AsNoTracking()
-                    .Include(appointmentEntity => appointmentEntity.Diagnose)
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
                     .Where(appointmentEntity => appointmentEntity.DoctorId == doctorId)
@@ -104,10 +106,11 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
                     .Where(appointmentEntity => appointmentEntity.PatientId == patientId)
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
+                    .Include(appointmentEntity => appointmentEntity.Diagnose)
+                    .ThenInclude(diagnoseEntity => diagnoseEntity.Treatment)
                     .ToListAsync()
                 : await _appDbContext.Appointments
                     .AsNoTracking()
-                    .Include(appointmentEntity => appointmentEntity.Diagnose)
                     .Include(appointmentEntity => appointmentEntity.Doctor)
                     .Include(appointmentEntity => appointmentEntity.Patient)
                     .Where(appointmentEntity => appointmentEntity.PatientId == patientId)

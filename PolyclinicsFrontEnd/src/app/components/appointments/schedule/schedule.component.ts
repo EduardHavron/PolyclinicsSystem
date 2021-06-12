@@ -7,7 +7,7 @@ import {Appointment} from "../../../shared/models/appointment/appointment";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {GroupedDateTime} from "../../../shared/models/date/grouped-date-time";
 import {MatStepper} from "@angular/material/stepper";
-import {MatCalendarCellClassFunction} from "@angular/material/datepicker";
+import {DateFilterFn, MatCalendarCellClassFunction} from "@angular/material/datepicker";
 import {IsLoadingService} from "@service-work/is-loading";
 import {ActivatedRoute, Router} from "@angular/router";
 import {User} from "../../../shared/models/user/User";
@@ -26,13 +26,14 @@ export class ScheduleComponent implements OnInit {
   public minDate = this.addDays(new Date(), 1)
   public maxDate = this.addDays(new Date, 30)
   public doctorFormGroup: FormGroup
-  public dateFormGroup: FormGroup
+  public dateFormGroup: FormControl
   public timeFormGroup: FormGroup
   public occupiedRange: Array<GroupedDateTime>
   public isReschedule = false
   public appointmentId = -1
   private patientId: User | null
-  public validate = (date: Date | null) => {
+
+  private validate: DateFilterFn<Date | null> = (date: Date | null) => {
     const occupiedRange = this.occupiedRange
     if (date == null) return false
     const occupiedDate = occupiedRange.find(x => {
@@ -41,21 +42,16 @@ export class ScheduleComponent implements OnInit {
     if (occupiedDate == null) {
       return true
     }
-    if (occupiedDate.times.length < occupiedDate.maxEntries) {
-      return true
-    } else {
-    }
-
-    return false
+    return (occupiedDate.times.length <= 11) || (occupiedDate.times.length === 0);
   }
-
+  public validateBound = this.validate.bind(this)
   public dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
     const occupied = this.occupiedRange
     if (view === 'month') {
       const contains = occupied.find(x => {
         return new Date(x.date).toDateString() === new Date(cellDate).toDateString()
       })
-      return (contains != null && contains.maxEntries <= contains.times.length) ? 'example-custom-date-class' : '';
+      return (contains != null && 11 <= contains.times.length) ? 'example-custom-date-class' : '';
     }
 
     return '';
@@ -72,7 +68,7 @@ export class ScheduleComponent implements OnInit {
     {view: "12:00", value: "12:00:00"},
     {view: "12:30", value: "12:30:00"},
   ]
-  public availableTimes = new Array<{ view: string, value: string }>()
+  public availableTimes = this.times
 
   constructor(private appointmentsService: AppointmentsService,
               private snackBar: MatSnackBar,
@@ -86,11 +82,9 @@ export class ScheduleComponent implements OnInit {
       doctor: new FormControl('', [
         Validators.required])
     })
-    this.dateFormGroup = this.fb.group({
-      date: new FormControl('', [
-        Validators.required
-      ])
-    })
+    this.dateFormGroup =  new FormControl(new Date(), [
+      Validators.required
+    ])
     this.timeFormGroup = this.fb.group({
       time: new FormControl('', [
         Validators.required
@@ -229,10 +223,8 @@ export class ScheduleComponent implements OnInit {
     }, {});
 
     this.occupiedRange = Object.keys(dates).map((date) => {
-
       return <GroupedDateTime>{
         date: date,
-        maxEntries: 11,
         times: dates[date]
       };
     })
@@ -243,16 +235,20 @@ export class ScheduleComponent implements OnInit {
   public filterTimes() {
     this.isLoading.add({key: 'schedule'})
     const date = this.occupiedRange.find(x => {
-      return new Date(x.date).toDateString() === new Date(this.dateFormGroup.value.date).toDateString()
+      return new Date(x.date).toDateString() === this.dateFormGroup.value.toDateString()
     })
-    if (date == null)
+    if (date == null) {
+      this.isLoading.remove({key: 'schedule'})
+      this.stepper?.next()
       return
-    this.availableTimes = this.times.filter(x => {
-      return !date.times.includes(x.value)
-    })
-    this.isLoading.remove({key: 'schedule'})
-    this.stepper?.next()
-    console.log(this.times)
-    console.log(this.availableTimes)
+    } else {
+      this.availableTimes = this.times.filter(x => {
+        return !date.times.includes(x.value)
+      })
+      this.isLoading.remove({key: 'schedule'})
+      this.stepper?.next()
+    }
+
+
   }
 }

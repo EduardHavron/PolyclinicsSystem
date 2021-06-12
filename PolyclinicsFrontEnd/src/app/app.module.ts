@@ -19,6 +19,10 @@ import { ViewAppointmentComponent } from './components/appointments/view-appoint
 import { AllAppointmentsComponent } from './components/appointments/all-appointments/all-appointments.component';
 import {MatGridListModule} from "@angular/material/grid-list";
 import { ViewMedicalCardComponent } from './components/appointments/view-medical-card/view-medical-card.component';
+import {MatCardModule} from "@angular/material/card";
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
 
 
 @NgModule({
@@ -28,24 +32,28 @@ import { ViewMedicalCardComponent } from './components/appointments/view-medical
     AllAppointmentsComponent,
     ViewMedicalCardComponent,
   ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        MatSnackBarModule,
-        HttpClientModule,
-        RouterModule,
-        LayoutModule,
-        RouterModule,
-        AppRoutingModule,
-        IsLoadingModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatMenuModule,
-        MatButtonModule,
-        MatTableModule,
-        MatToolbarModule,
-        MatGridListModule
-    ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
+    HttpClientModule,
+    RouterModule,
+    LayoutModule,
+    RouterModule,
+    AppRoutingModule,
+    IsLoadingModule,
+    MatProgressBarModule,
+    MatIconModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatTableModule,
+    MatToolbarModule,
+    MatGridListModule,
+    MatCardModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     ],

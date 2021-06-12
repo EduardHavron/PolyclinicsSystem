@@ -14,7 +14,7 @@
         <mat-icon>home</mat-icon>
       </div>
 
-      <div class="header-item" *ngIf="this.isPatient || this.isDoctor">
+     <!-- <div class="header-item" *ngIf="this.isPatient || this.isDoctor">
         <span class="header-item-text">PROFILE</span>
         <mat-icon class="header-item-image">account_circle</mat-icon>
       </div>
@@ -22,7 +22,7 @@
       <div class="header-item" *ngIf="this.isDoctor || this.isPatient">
         <span class="header-item-text">ALL APPOINTMENTS</span>
         <mat-icon class="header-item-image">event</mat-icon>
-      </div>
+      </div>-->
       <div class="header-item" *ngIf="this.isAdmin">
         <button class="header-item header-item-text" mat-button [matMenuTriggerFor]="menu">ADMIN MENU</button>
         <mat-menu #menu="matMenu">

@@ -1,0 +1,92 @@
+.tile-header {
+  border-radius: 5px 5px 0 0
+}
+
+.view-appointment-main {
+  height: 80vh;
+  width: 80vw;
+  margin-top: 7%;
+  margin-left: 10%;
+}
+
+.view-appointment-header {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  align-items: center;
+  justify-content: space-between;
+  align-content: space-between;
+  font: 500 16px/19px Roboto, "Helvetica Neue", sans-serif;
+  position: relative;
+}
+
+.view-appointment-header-appointment {
+
+}
+
+.view-appointment-header-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.ignore-margin-left {
+  margin-left: 0
+}
+
+.mat-card {
+  font-family: 'Oswald', sans-serif;
+  text-align: center;
+  height: 100%
+}
+
+.mat-toolbar-row {
+  padding: 0
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.diagnose-actions-container {
+  position: relative;
+}
+
+.diagnose-actions-button {
+  position: absolute;
+  bottom: 1%;
+}
+
+mat-form-field {
+  max-height: 30%;
+  width: 100%;
+}
+
+.diagnose-actions-inputs {
+  width: 100%;
+  height: 85%;
+  margin: 10px;
+}
+
+.diagnose-actions-input-diagnose {
+  margin-bottom: 30px;
+}
+
+.last {
+  display: flex;
+  align-self: end;
+  justify-self: end;
+}
+
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  justify-content: center;
+}

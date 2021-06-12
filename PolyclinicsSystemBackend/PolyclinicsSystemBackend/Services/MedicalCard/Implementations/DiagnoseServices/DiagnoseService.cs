@@ -90,7 +90,7 @@ namespace PolyclinicsSystemBackend.Services.MedicalCard.Implementations.Diagnose
             };
             _logger.LogInformation("Adding diagnose to database");
             var result = await _appDbContext.Diagnoses.AddAsync(diagnoseObject);
-
+            await _appDbContext.SaveChangesAsync();
             _logger.LogInformation("Attaching diagnose to appointment");
             appointment.DiagnoseId = result.Entity.DiagnoseId;
             _logger.LogInformation("Saving changes");
