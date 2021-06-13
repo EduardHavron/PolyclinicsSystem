@@ -3,7 +3,7 @@
 
     <mat-grid-tile class="tile-header" [colspan]="3" [rowspan]="10">
       <mat-toolbar color="primary" class="view-appointment-header">
-        <mat-toolbar-row class="">
+        <mat-toolbar-row class="toolbar-row">
           <div class="view-appointment-header-item ignore-margin-left">
             <mat-card>
               <mat-card-title>
@@ -23,10 +23,10 @@
                 Doctor:
               </mat-card-title>
               <mat-card-subtitle>
-                {{this.doctorTypeView}}
+                {{this.appointment.doctor.name + ' ' + this.appointment.doctor.surname}}
               </mat-card-subtitle>
               <mat-card-content>
-                {{this.doctorNameView}}
+                {{this.appointment.doctor.doctorType}}
               </mat-card-content>
             </mat-card>
           </div>
@@ -37,7 +37,7 @@
                   <p>Patient:</p>
                 </mat-card-title>
                 <mat-card-content>
-                  {{this.patientNameView}}
+                  {{this.appointment.patient.name + ' ' + this.appointment.patient.surname}}
                 </mat-card-content>
               </mat-card>
             </div>
@@ -45,57 +45,74 @@
         </mat-toolbar-row>
       </mat-toolbar>
     </mat-grid-tile>
+    <mat-grid-tile class="loader-wrapper" rowspan="1" colspan="3" *ngIf="('viewAppointment' | swIsLoading | async)">
+      <mat-progress-bar color="accent" class="loading-bar" mode="indeterminate"
+                        *ngIf="('viewAppointment' | swIsLoading | async)"></mat-progress-bar>
+    </mat-grid-tile>
 
-<!--    <mat-grid-tile style="background-color: #444444" [colspan]="1" rowspan="71">
-      <app-view-medical-card>
+    <mat-grid-tile id="medCard" class="med-card-component" [colspan]="1" rowspan="62">
+      <app-view-medical-card class="med-card-tile" [medicalCard]="this.medicalCard"
+                             [patient]="this.appointment.patient">
 
       </app-view-medical-card>
-    </mat-grid-tile>-->
-    <mat-grid-tile *ngIf="checkForStartAbility()" style="background-color: white" colspan="3" rowspan="20">
+
+    </mat-grid-tile>
+
+    <mat-grid-tile *ngIf="!checkIfStarted() && checkIfDoctor()" class="diagnose-actions-container" colspan="2"
+                   rowspan="20">
       <div class="start-screen">
         <p>You should start appointment before interacting with patient</p>
-        <button mat-raised-button  color="primary" (click)="startAppointment()">Start</button>
+        <button mat-raised-button color="primary" (click)="startAppointment()">Start</button>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile *ngIf="!checkForStartAbility()" style="background-color: white;" class="diagnose-actions-container" [colspan]="3" rowspan="60">
+    <mat-grid-tile *ngIf="!checkIfStarted() && checkIfPatient()" class="diagnose-actions-container" colspan="2"
+                   rowspan="20">
+      <div class="start-screen">
+        <p>Appointment hasn't been started yet</p>
+        <p>Appointment should be started by doctor</p>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="checkIfStarted()" class="diagnose-actions-container" [colspan]="2"
+                   rowspan="62">
       <div class="diagnose-actions-inputs">
-       <div class="diagnose-actions-input-diagnose">
-         <form [formGroup]="this.formGroupDiagnose">
-           <mat-form-field color="primary" appearance="fill">
-             <mat-label>Please, input diagnose info here</mat-label>
-             <textarea #diagnose cdkTextareaAutosize
-                       #autosize="cdkTextareaAutosize"
-                       cdkAutosizeMinRows="1"
-                       cdkAutosizeMaxRows="10" formControlName="diagnose" matInput></textarea>
-             <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupDiagnose)}}</mat-error>
-           </mat-form-field>
-           <div class="diagnose-actions-input-save">
-             <button mat-raised-button color="primary" (click)="saveDiagnose()">Save diagnose</button>
-           </div>
-         </form>
-       </div>
-        <div class="diagnose-actions-input-treatment" *ngIf="checkTreatmentAbility()">
-          <form [formGroup]="this.formGroupTreatment">
-            <mat-form-field color="primary" appearance="fill">
-              <mat-label>Please, input treatment info here</mat-label>
-              <textarea #treatment cdkTextareaAutosize
-                        #autosize="cdkTextareaAutosize"
-                        cdkAutosizeMinRows="1"
-                        cdkAutosizeMaxRows="10" formControlName="treatment" matInput required></textarea>
-              <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupTreatment)}}</mat-error>
-            </mat-form-field>
-            <div class="diagnose-actions-input-save">
-              <button mat-raised-button color="primary" (click)="saveTreatment()">Save treatment</button>
-            </div>
-          </form>
+        <div class="diagnose-actions-input-diagnose">
+
+          <mat-form-field color="primary" appearance="fill">
+            <mat-label>Please, input diagnose info here</mat-label>
+            <textarea [disabled]="checkIfPatient()" [formControl]="this.formGroupDiagnose" #diagnose cdkTextareaAutosize
+                      #autosize="cdkTextareaAutosize"
+                      cdkAutosizeMinRows="1"
+                      cdkAutosizeMaxRows="15" matInput></textarea>
+            <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupDiagnose)}}</mat-error>
+          </mat-form-field>
+          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor()">
+            <button mat-raised-button color="primary" (click)="saveDiagnose()">Save diagnose</button>
+          </div>
+
+        </div>
+        <div class="diagnose-actions-input-treatment" *ngIf="checkIfDiagnoseSettled()">
+
+          <mat-form-field color="primary" appearance="fill">
+            <mat-label>Please, input treatment info here</mat-label>
+            <textarea [disabled]="checkIfPatient()" [formControl]="this.formGroupTreatment" #treatment
+                      cdkTextareaAutosize
+                      #autosize="cdkTextareaAutosize"
+                      cdkAutosizeMinRows="1"
+                      cdkAutosizeMaxRows="15" matInput required></textarea>
+            <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupTreatment)}}</mat-error>
+          </mat-form-field>
+          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor()">
+            <button mat-raised-button color="primary" (click)="saveTreatment()">Save treatment</button>
+          </div>
+
         </div>
       </div>
-      <div class="diagnose-actions-button">
+      <div class="diagnose-actions-button" *ngIf="checkIfDoctor()">
         <div class="">
-          <button mat-raised-button *ngIf="checkForFinalizeAbility()" color="warn" (click)="finalizeAppointment()">Finalize</button>
+          <button mat-raised-button *ngIf="checkIfStarted()" color="warn" (click)="finalizeAppointment()">Finalize
+          </button>
         </div>
       </div>
     </mat-grid-tile>
-    <mat-progress-bar color="accent" class="login-form-loading-bar" mode="indeterminate" *ngIf="('login' | swIsLoading | async)"></mat-progress-bar>
   </mat-grid-list>
 </div>

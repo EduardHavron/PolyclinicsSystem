@@ -12,7 +12,7 @@ private url = environment.apiUrl + 'medCard/'
   constructor(private http: HttpClient) { }
 
   public getMedCard(userId: string, includeDiagnose: boolean): Observable<MedicalCard> {
-    return this.http.get<MedicalCard>(this.url + `get/${userId}?includeDiagnose=${includeDiagnose}`)
+    return this.http.get<MedicalCard>(this.url + `get/${userId}?includeDiagnoses=${includeDiagnose}`)
   }
 
   public updateMedCard(medicalCardId: number, medicalCard: MedicalCard): Observable<MedicalCard> {

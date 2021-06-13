@@ -52,14 +52,15 @@
           </mat-select>
         </mat-form-field>
         <div class="buttons">
-          <button mat-raised-button color="primary" matStepperNext>Review</button>
+          <button mat-raised-button color="primary" (click)="prepareReview()">Review</button>
         </div>
       </form>
     </mat-step>
     <mat-step class="step-container">
       <ng-template matStepLabel>Review</ng-template>
       <p>Here is what you chose:</p>
-      <span *ngIf="this.chosenDoctor != null">Doctor: {{this.chosenDoctor.surname + ' ' + this.chosenDoctor.name + ' -  ' + this.chosenDoctor.doctorType}}</span>
+      <p *ngIf="this.chosenDoctor != null">Doctor: {{this.chosenDoctor.surname + ' ' + this.chosenDoctor.name + ' -  ' + this.chosenDoctor.doctorType}}</p>
+      <p>Chosen time: {{this.chosenTimeView}}</p>
       <div class="buttons">
         <button color="accent" mat-raised-button matStepperPrevious>Back</button>
         <button color="warn" mat-raised-button (click)="stepper.reset()">Reset</button>

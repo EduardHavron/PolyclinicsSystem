@@ -23,7 +23,7 @@ namespace PolyclinicsSystemBackend.Controllers
 
         [HttpGet]
         [Route("get/{userId}")]
-        public async Task<IActionResult> GetMedicalCard(string userId, bool includeDiagnoses = false)
+        public async Task<IActionResult> GetMedicalCard(string userId, bool includeDiagnoses)
         {
             var result = await _medicalCardService.GetMedicalCard(userId, includeDiagnoses);
             return result.IsSuccess ? Ok(result.Result) : NotFound(result.Errors);

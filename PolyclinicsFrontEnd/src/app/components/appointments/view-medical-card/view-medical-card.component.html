@@ -1,1 +1,39 @@
-<p>view-medical-card works!</p>
+<div>
+  <mat-card>
+    <mat-card-title>
+      <span>Medical card for {{this.patient.name + ' ' + this.patient.surname}}</span>
+    </mat-card-title>
+    <mat-card-subtitle>
+      <span>Email: {{this.patient.email}}</span>
+    </mat-card-subtitle>
+    <mat-card-content>
+      <div>Weight: {{this.medicalCard.weight}} KG</div>
+      <div>Height: {{this.medicalCard.height}}</div>
+      <div>Age: {{this.medicalCard.age}}</div>
+      <div>Gender: {{this.genderView}}</div>
+    </mat-card-content>
+    <mat-card-footer>
+          <span
+            *ngIf="medicalCard.additionalInfo != null && medicalCard.additionalInfo.length > 0">{{this.medicalCard.additionalInfo}}</span>
+    </mat-card-footer>
+  </mat-card>
+</div>
+
+<mat-accordion class="accordion" multi>
+  <mat-expansion-panel *ngFor="let diagnose of this.medicalCard.diagnoses">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Diagnose: {{this.formatDate(diagnose.diagnoseDate)}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div *ngIf="diagnose != null">
+      <p class="diagnose-title bold">Diagnose:</p>
+      <span class="diagnose-title">{{diagnose.diagnoseInfo}}</span>
+    </div>
+
+    <div *ngIf="diagnose.treatment != null">
+      <p class="diagnose-title bold">Treatment</p>
+      <span class="diagnose-title">{{diagnose.treatment.treatmentInstructions}}</span>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

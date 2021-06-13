@@ -22,9 +22,6 @@
   position: relative;
 }
 
-.view-appointment-header-appointment {
-
-}
 
 .view-appointment-header-item {
   display: flex;
@@ -44,7 +41,8 @@
 }
 
 .mat-toolbar-row {
-  padding: 0
+  padding: 0;
+  height: 100%;
 }
 
 p {
@@ -54,6 +52,7 @@ p {
 
 .diagnose-actions-container {
   position: relative;
+  background-color: white;
 }
 
 .diagnose-actions-button {
@@ -89,4 +88,20 @@ mat-form-field {
   justify-items: center;
   align-content: center;
   justify-content: center;
+}
+
+.med-card-tile {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.loading-bar {
+  width: 100%;
+  height: 100%;
+}
+
+.loader-wrapper {
+  background-color: #673ab7;
 }

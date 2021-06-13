@@ -14,6 +14,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {IsLoadingPipeModule} from "@service-work/is-loading";
 import {MatSelectModule} from "@angular/material/select";
+import {MatExpansionModule} from "@angular/material/expansion";
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import {MatSelectModule} from "@angular/material/select";
         FlexLayoutModule,
         MatProgressBarModule,
         IsLoadingPipeModule,
-        MatSelectModule
+        MatSelectModule,
+        MatExpansionModule,
     ]
 })
 export class AppointmentsModule { }

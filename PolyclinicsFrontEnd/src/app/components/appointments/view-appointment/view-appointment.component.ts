@@ -10,9 +10,13 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {IsLoadingService} from "@service-work/is-loading";
 import {AppointmentStatus} from "../../../shared/static/appointment-status/appointment-status";
 import {AppointmentStatuses} from "../../../shared/enums/appointment-statuses";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormControl, Validators} from "@angular/forms";
 import {CdkTextareaAutosize} from "@angular/cdk/text-field";
 import {take} from "rxjs/operators";
+import {AuthorizationService} from "../../../shared/services/auth/authorization.service";
+import {User} from "../../../shared/models/user/User";
+import {Role} from "../../../shared/static/role/role";
+import {Roles} from "../../../shared/enums/roles";
 
 @Component({
   selector: 'app-view-appointment',
@@ -20,17 +24,13 @@ import {take} from "rxjs/operators";
   styleUrls: ['./view-appointment.component.css']
 })
 export class ViewAppointmentComponent implements OnInit {
-  public appointment: Appointment | null
-  public medicalCard: MedicalCard | null
+  public appointment: Appointment = new Appointment()
+  public medicalCard: MedicalCard = new MedicalCard()
   public appointmentDateView: string
-  public appointmentStatusView: string
-  public doctorNameView: string = ''
-  public doctorTypeView: string = ''
-  public patientNameView: string = ''
-  public accessToActions: boolean = false
-  public appointmentStatus = AppointmentStatuses.NotExist
-  public formGroupDiagnose: FormGroup
-  public formGroupTreatment: FormGroup
+  public appointmentStatusView: string = AppointmentStatus.getEnumString(AppointmentStatuses.NotExist)
+  public formGroupDiagnose: FormControl
+  public formGroupTreatment: FormControl
+  public currentUser: User = new User()
   @ViewChild('autosize') autosize: CdkTextareaAutosize | undefined;
   @ViewChild('diagnose') diagnose: any;
   @ViewChild('treatment') treatment: any;
@@ -43,64 +43,78 @@ export class ViewAppointmentComponent implements OnInit {
               private treatmentService: TreatmentService,
               private medicalCardService: MedicalCardService,
               private _ngZone: NgZone,
-              private fb: FormBuilder) {
+              private authService: AuthorizationService) {
     this.isLoading.add({key: 'viewAppointment'})
-    this.formGroupDiagnose = fb.group({
-      diagnose: ['', Validators.required]
-    })
-    this.formGroupTreatment = fb.group({
-      treatment: ['', Validators.required]
-    })
+    this.formGroupDiagnose = new FormControl(
+      '', Validators.required
+    )
+    this.formGroupTreatment = new FormControl('', Validators.required)
     this.appointmentDateView = ''
-    this.appointmentStatusView = ''
-    this.appointment = null
-    this.medicalCard = null
-    const isDoctor = this.router.url.includes('view-doctor')
 
     const appointmentId = this.activatedRoute.snapshot.params['id']
     if (appointmentId != null) {
-      this.appointmentsService.getAppointment(appointmentId, true)
-        .subscribe(data => {
-          this.appointment = data
-          this.appointmentDateView = new Date(data.appointmentDate).toLocaleString().substring(0, 17)
-          this.appointmentStatusView = AppointmentStatus.getEnumString(data.appointmentStatus)
-          this.appointmentStatus = data.appointmentStatus
-          this.doctorNameView = data.doctor.name + ' ' + data.doctor.surname
-          this.doctorTypeView = data.doctor.doctorType
-          this.patientNameView = data.patient.name + ' ' + data.patient.surname
-          this.accessToActions = isDoctor && data.appointmentStatus === AppointmentStatuses.Started
-          if (data.diagnose !== null && data.diagnose !== undefined) {
-            if (data.diagnose.treatment != null) {
-              this.formGroupTreatment.setValue({
-                treatment: data.diagnose.treatment.treatmentInstructions
-              })
-            }
-            this.formGroupDiagnose.setValue({
-              diagnose: data.diagnose.diagnoseInfo
-            })
-          }
-          this.medicalCardService.getMedCard(data.patient.id, true)
+      this.authService.currentUser.subscribe(data => {
+        if (data != null) {
+          this.currentUser = data
+          this.appointmentsService.getAppointment(appointmentId, true)
             .subscribe(data => {
-              this.medicalCard = data
-              this.isLoading.remove({key: 'viewAppointment'})
-            },
+                this.appointment = data
+                this.appointmentDateView = new Date(data.appointmentDate).toLocaleString().substring(0, 17)
+                this.appointmentStatusView = AppointmentStatus.getEnumString(data.appointmentStatus)
+                if (data.diagnose !== null && data.diagnose !== undefined) {
+                  if (data.diagnose.treatment != null) {
+                    this.formGroupTreatment.setValue(
+                      data.diagnose.treatment.treatmentInstructions)
+                  }
+                  this.formGroupDiagnose.setValue(
+                    data.diagnose.diagnoseInfo
+                  )
+                }
+                this.medicalCardService.getMedCard(data.patient.id, true)
+                  .subscribe(data => {
+                      this.medicalCard = data
+                      this.isLoading.remove({key: 'viewAppointment'})
+                    },
+                    () => {
+                      this.snackBar.open("Failed to load medical card for associated patient", 'Error', {
+                        duration: 5000
+                      })
+                      this.isLoading.remove({key: 'viewAppointment'})
+                    })
+              },
               () => {
-                this.snackBar.open("Failed to load medical card for associated patient", 'Error', {
+                this.snackBar.open("Failed to load appointment", 'Error', {
                   duration: 5000
                 })
                 this.isLoading.remove({key: 'viewAppointment'})
               })
-        },
-          () => {
-            this.snackBar.open("Failed to load appointment", 'Error', {
-              duration: 5000
-            })
-            this.isLoading.remove({key: 'viewAppointment'})
-          })
+        }
+      }, () => {
+        this.snackBar.open("Failed to load user", "Error", {
+          duration: 5000
+        })
+        this.isLoading.remove({key: 'viewAppointment'})
+      })
     }
   }
 
   ngOnInit(): void {
+  }
+
+  public checkIfDoctor() {
+    return this.currentUser.roles.includes(Role.getEnumString(Roles.Doctor))
+  }
+
+  public checkIfPatient() {
+    return this.currentUser.roles.includes(Role.getEnumString(Roles.Patient))
+  }
+
+  public checkIfStarted() {
+    return this.appointment.appointmentStatus === AppointmentStatuses.Started
+  }
+
+  public checkIfDiagnoseSettled() {
+    return this.appointment.diagnose !== null
   }
 
   public startAppointment() {
@@ -108,11 +122,9 @@ export class ViewAppointmentComponent implements OnInit {
       this.isLoading.add({key: 'viewAppointment'})
       this.appointmentsService.startAppointment(this.appointment.appointmentId)
         .subscribe(() => {
-          this.accessToActions = true
           this.snackBar.open("Appointment started, now you can set diagnose and treatment", "Information", {
             duration: 5000
           })
-          this.appointmentStatus = AppointmentStatuses.Started
           if (this.appointment != null) {
             this.appointment.appointmentStatus = AppointmentStatuses.Started
           }
@@ -128,7 +140,7 @@ export class ViewAppointmentComponent implements OnInit {
   }
 
   public finalizeAppointment() {
-    if (this.appointment != null) {
+    if (this.appointment != null && this.appointment.diagnose != null && this.appointment.diagnose?.treatment != null)  {
       this.isLoading.add({key: 'viewAppointment'})
       this.appointmentsService.finalizeAppointment(this.appointment.appointmentId)
         .subscribe(() => {
@@ -146,31 +158,18 @@ export class ViewAppointmentComponent implements OnInit {
               duration: 5000
             })
           })
+    } else {
+      this.snackBar.open("You can't finalize appointment without specifying diagnose and treatment", "Error", {
+        duration: 5000
+      })
     }
   }
 
-  public checkForStartAbility() {
-    return this.appointmentStatus === AppointmentStatuses.Planned
-  }
-
-  public checkForFinalizeAbility() {
-    return (this.appointmentStatus === AppointmentStatuses.Started &&
-      this.appointment?.diagnose != null &&
-      this.appointment.diagnose.treatment != null)
-  }
-
-
-  getErrorMessage(formGroup: FormGroup): string {
+  getErrorMessage(formGroup: FormControl): string {
     if (formGroup.hasError('required')) {
       return 'You must enter a value';
     }
     return ''
-  }
-
-  public checkTreatmentAbility() {
-    return this.appointment != null &&
-      this.appointment.appointmentStatus == AppointmentStatuses.Started &&
-      this.appointment.diagnose != null
   }
 
   triggerResize() {
@@ -206,34 +205,58 @@ export class ViewAppointmentComponent implements OnInit {
   }
 
   public createTreatment(diagnoseId: number) {
-    this.treatmentService.createTreatment(diagnoseId, this.formGroupTreatment.value.treatment)
+    this.treatmentService.createTreatment(diagnoseId, this.formGroupTreatment.value)
       .subscribe(() => {
-        this.isLoading.remove({key: 'viewAppointment'})
-        location.reload()
+        this.snackBar.open("Successfully created treatment, appointment can be finalized")
+        setTimeout(() => {
+          this.isLoading.remove({key: 'viewAppointment'})
+          location.reload()
+        }, 3000)
       })
   }
 
   public updateTreatment(diagnoseId: number) {
-    this.treatmentService.createTreatment(diagnoseId, this.formGroupTreatment.value.treatment)
+    this.treatmentService.createTreatment(diagnoseId, this.formGroupTreatment.value)
       .subscribe(() => {
-        this.isLoading.remove({key: 'viewAppointment'})
-        location.reload()
+        this.snackBar.open("Successfully updated treatment, appointment can be finalized")
+        setTimeout(() => {
+          this.isLoading.remove({key: 'viewAppointment'})
+          location.reload()
+        }, 3000)
       })
   }
 
   public createDiagnose(appointmentId: number, medicalCardId: number) {
-    this.diagnoseService.addDiagnoseToCard(appointmentId, medicalCardId, this.formGroupDiagnose.value.diagnose)
+    this.diagnoseService.addDiagnoseToCard(appointmentId, medicalCardId, this.formGroupDiagnose.value)
       .subscribe(() => {
-        this.isLoading.remove({key: 'viewAppointment'})
-        location.reload()
-      })
+        this.snackBar.open("Successfully created diagnose, please set treatment to get access to finalization")
+        setTimeout(() => {
+          this.isLoading.remove({key: 'viewAppointment'})
+          location.reload()
+        }, 3000)
+      },
+        () => {
+          this.snackBar.open("An error appeared when creating diagnose", "Error", {
+            duration: 5000
+          })
+          this.isLoading.remove({key: 'viewAppointment'})
+        })
   }
 
   public updateDiagnose(diagnoseId: number) {
-    this.diagnoseService.updateDiagnose(diagnoseId, this.formGroupDiagnose.value.diagnose)
+    this.diagnoseService.updateDiagnose(diagnoseId, this.formGroupDiagnose.value)
       .subscribe(() => {
-        this.isLoading.remove({key: 'viewAppointment'})
-        location.reload()
-      })
+        this.snackBar.open("Successfully updated diagnose")
+        setTimeout(() => {
+          this.isLoading.remove({key: 'viewAppointment'})
+          location.reload()
+        }, 3000)
+      },
+        () => {
+          this.snackBar.open("An error appeared when upating diagnose", "Error", {
+            duration: 5000
+          })
+          this.isLoading.remove({key: 'viewAppointment'})
+        })
   }
 }

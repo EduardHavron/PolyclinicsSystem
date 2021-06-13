@@ -31,7 +31,9 @@ export class ScheduleComponent implements OnInit {
   public occupiedRange: Array<GroupedDateTime>
   public isReschedule = false
   public appointmentId = -1
+  public chosenTimeView = ''
   private patientId: User | null
+
 
   private validate: DateFilterFn<Date | null> = (date: Date | null) => {
     const occupiedRange = this.occupiedRange
@@ -42,7 +44,7 @@ export class ScheduleComponent implements OnInit {
     if (occupiedDate == null) {
       return true
     }
-    return (occupiedDate.times.length <= 11) || (occupiedDate.times.length === 0);
+    return (occupiedDate.times.length < 10) || (occupiedDate.times.length === 0);
   }
   public validateBound = this.validate.bind(this)
   public dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
@@ -51,7 +53,7 @@ export class ScheduleComponent implements OnInit {
       const contains = occupied.find(x => {
         return new Date(x.date).toDateString() === new Date(cellDate).toDateString()
       })
-      return (contains != null && 11 <= contains.times.length) ? 'example-custom-date-class' : '';
+      return (contains != null && 10 <= contains.times.length) ? 'example-custom-date-class' : '';
     }
 
     return '';
@@ -100,6 +102,7 @@ export class ScheduleComponent implements OnInit {
             this.appointmentId = this.activatedRoute.snapshot.params['id']
             this.appointmentsService.getAppointment(this.appointmentId, false)
               .subscribe(data => {
+                this.dateFormGroup.patchValue(data.appointmentDate)
                 this.chooseDoctor(data.doctor.id)
                 this.isLoading.remove({key: 'schedule'})
               })
@@ -156,7 +159,7 @@ export class ScheduleComponent implements OnInit {
   public submitAppointment() {
     if (this.doctorFormGroup.valid && this.dateFormGroup.valid && this.timeFormGroup.valid) {
       this.isLoading.add({key: 'schedule'})
-      const appointmentDate = new Date(new Date(this.dateFormGroup.value.date).toDateString() +
+      const appointmentDate = new Date(new Date(this.dateFormGroup.value).toDateString() +
         ' ' + this.timeFormGroup.value.time.split('+')[0])
       if (this.isReschedule) {
         this.updateAppointment(appointmentDate)
@@ -248,7 +251,11 @@ export class ScheduleComponent implements OnInit {
       this.isLoading.remove({key: 'schedule'})
       this.stepper?.next()
     }
+  }
 
-
+  public prepareReview() {
+    this.chosenTimeView = new Date(new Date(this.dateFormGroup.value).toDateString() +
+      ' ' + this.timeFormGroup.value.time.split('+')[0]).toLocaleString().substr(0, 17)
+    this.stepper?.next()
   }
 }

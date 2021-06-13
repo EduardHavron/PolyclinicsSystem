@@ -159,7 +159,7 @@ namespace PolyclinicsSystemBackend.Services.Appointment.Implementations
             var strippedDate = appointmentDtoPost.AppointmentDate.Date + new TimeSpan(appointmentDtoPost.AppointmentDate.TimeOfDay.Hours,
                 appointmentDtoPost.AppointmentDate.TimeOfDay.Minutes,
                 0);
-            var strippedDateNow = DateTime.Now + new TimeSpan(DateTime.Now.TimeOfDay.Hours,
+            var strippedDateNow = DateTime.Now.Date + new TimeSpan(DateTime.Now.TimeOfDay.Hours,
                 DateTime.Now.TimeOfDay.Minutes,
                 0);
             if (strippedDate <= strippedDateNow)
