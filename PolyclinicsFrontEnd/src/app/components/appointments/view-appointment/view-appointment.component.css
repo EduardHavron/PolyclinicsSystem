@@ -95,6 +95,7 @@ mat-form-field {
   height: 100%;
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  background-color: #FFFFFF;
 }
 
 .loading-bar {

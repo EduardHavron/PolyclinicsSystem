@@ -8,6 +8,7 @@ import {ViewAppointmentComponent} from "../../view-appointment/view-appointment.
 import {DoctorGuard} from "../../../../shared/guard/doctor/doctor.guard";
 import {AllAppointmentsComponent} from "../../all-appointments/all-appointments.component";
 import {Doctor} from "../../../../shared/models/doctor/doctor";
+import {AuthGuard} from "../../../../shared/guard/auth/auth.guard";
 
 
 const routes: Routes = [
@@ -36,16 +37,10 @@ const routes: Routes = [
     canLoad: [PatientGuard]
   },
   {
-    path: 'all-doctor',
+    path: 'all',
     component: AllAppointmentsComponent,
-    canActivate: [DoctorGuard],
-    canLoad: [DoctorGuard]
-  },
-  {
-    path: 'all-patient',
-    component: AllAppointmentsComponent,
-    canActivate: [PatientGuard],
-    canLoad: [PatientGuard]
+    canActivate: [AuthGuard],
+    canLoad: [AuthGuard]
   },
   {
     path: '**',

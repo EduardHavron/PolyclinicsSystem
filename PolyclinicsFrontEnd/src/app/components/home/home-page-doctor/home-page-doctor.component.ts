@@ -19,7 +19,7 @@ export class HomePageDoctorComponent implements OnInit {
   public dataSource: Array<Appointment> | null
   private user: User | null
   public appointmentStatus = new AppointmentStatus()
-  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up', 'View','Time']
+  public displayedColumns: string[] = ['Status', 'Name', 'Surname', 'Diagnose settled up', 'View', 'Cancel', 'Time']
 
   constructor(private appointmentService: AppointmentsService,
               private authService: AuthorizationService,
@@ -56,6 +56,33 @@ export class HomePageDoctorComponent implements OnInit {
           duration: 5000
         })
       })
+  }
+
+  public checkForCancelAbility(appointmentStatus: AppointmentStatuses) {
+    return appointmentStatus === AppointmentStatuses.Planned
+  }
+
+  public cancelAppointment(appointmentId: number) {
+    this.isLoadingService.add({key: 'homePatient'})
+    this.appointmentService.cancelAppointment(appointmentId)
+      .subscribe(() => {
+          if (this.dataSource != null) {
+            this.dataSource = this.dataSource.filter(x => {
+              return x.appointmentId !== appointmentId
+            })
+          }
+          this.snackBar.open("Appointment successfully canceled", "Information", {
+              duration: 5000
+            }
+          )
+          this.isLoadingService.remove({key: 'homePatient'})
+        },
+        () => {
+          this.snackBar.open("An error appeared while cancelling appointment", "Error", {
+              duration: 5000
+            }
+          )
+        })
   }
 
   ngOnInit(): void {

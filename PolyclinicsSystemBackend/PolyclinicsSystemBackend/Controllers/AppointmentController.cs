@@ -85,7 +85,7 @@ namespace PolyclinicsSystemBackend.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Patient,Admin")]
+        [Authorize]
         [Route("cancel/{appointmentId}")]
         public async Task<IActionResult> CancelAppointment(int appointmentId)
         {

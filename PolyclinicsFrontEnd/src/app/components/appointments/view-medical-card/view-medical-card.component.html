@@ -22,7 +22,7 @@
 <mat-accordion class="accordion" multi>
   <mat-expansion-panel *ngFor="let diagnose of this.medicalCard.diagnoses">
     <mat-expansion-panel-header>
-      <mat-panel-title>
+      <mat-panel-title class="diagnose-title">
         Diagnose: {{this.formatDate(diagnose.diagnoseDate)}}
       </mat-panel-title>
     </mat-expansion-panel-header>

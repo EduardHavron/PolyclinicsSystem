@@ -14,38 +14,14 @@
         <mat-icon>home</mat-icon>
       </div>
 
-      <div class="header-item" *ngIf="this.isPatient || this.isDoctor">
+      <div class="header-item" *ngIf="false"><!--*ngIf="this.isPatient || this.isDoctor"-->
         <span class="header-item-text">PROFILE</span>
         <mat-icon class="header-item-image">account_circle</mat-icon>
       </div>
 
-      <div class="header-item" *ngIf="this.isDoctor || this.isPatient">
+      <div class="header-item" *ngIf="this.isDoctor || this.isPatient" routerLink="/appointments/all">
         <span class="header-item-text">ALL APPOINTMENTS</span>
         <mat-icon class="header-item-image">event</mat-icon>
-      </div>
-      <div class="header-item" *ngIf="this.isAdmin">
-        <button class="header-item header-item-text" mat-button [matMenuTriggerFor]="menu">ADMIN MENU</button>
-        <mat-menu #menu="matMenu">
-          <div mat-menu-item class="header-item">
-            <span class="header-item-text-small">APPOINTMENTS AS DOCTOR</span>
-            <mat-icon class="header-item-image">event</mat-icon>
-          </div>
-
-          <div mat-menu-item class="header-item">
-            <span class="header-item-text-small">APPOINTMENTS AS PATIENT</span>
-            <mat-icon class="header-item-image">event</mat-icon>
-          </div>
-
-          <div mat-menu-item class="header-item" routerLink="/admin/register">
-            <span class="header-item-text-small">REGISTER DOCTOR</span>
-            <mat-icon class="header-item-image">event</mat-icon>
-          </div>
-        </mat-menu>
-      </div>
-
-      <div class="header-item" *ngIf="this.isAdmin" routerLink="/home/admin">
-        <span class="header-item-text">HOME</span>
-        <mat-icon class="header-item-image">admin_panel_settings</mat-icon>
       </div>
     </div>
     <div class="header-right">

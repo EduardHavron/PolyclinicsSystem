@@ -61,6 +61,7 @@ export class ViewAppointmentComponent implements OnInit {
                 this.appointment = data
                 this.appointmentDateView = new Date(data.appointmentDate).toLocaleString().substring(0, 17)
                 this.appointmentStatusView = AppointmentStatus.getEnumString(data.appointmentStatus)
+                if (this.checkIfFinalized() || this.checkIfPatient()) this.controlInputs(true)
                 if (data.diagnose !== null && data.diagnose !== undefined) {
                   if (data.diagnose.treatment != null) {
                     this.formGroupTreatment.setValue(
@@ -106,11 +107,24 @@ export class ViewAppointmentComponent implements OnInit {
   }
 
   public checkIfPatient() {
+
     return this.currentUser.roles.includes(Role.getEnumString(Roles.Patient))
   }
 
   public checkIfStarted() {
     return this.appointment.appointmentStatus === AppointmentStatuses.Started
+  }
+
+  public checkIfFinalized() {
+
+    return this.appointment.appointmentStatus === AppointmentStatuses.Finalized
+  }
+
+  public controlInputs(shouldBeDisabled: boolean) {
+    if (shouldBeDisabled) {
+      this.formGroupTreatment.disable()
+      this.formGroupDiagnose.disable()
+    }
   }
 
   public checkIfDiagnoseSettled() {

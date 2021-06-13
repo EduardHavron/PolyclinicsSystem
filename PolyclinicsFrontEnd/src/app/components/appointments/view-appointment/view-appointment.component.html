@@ -58,34 +58,34 @@
 
     </mat-grid-tile>
 
-    <mat-grid-tile *ngIf="!checkIfStarted() && checkIfDoctor()" class="diagnose-actions-container" colspan="2"
+    <mat-grid-tile *ngIf="!checkIfStarted() && !checkIfFinalized() && checkIfDoctor()" class="diagnose-actions-container" colspan="2"
                    rowspan="20">
       <div class="start-screen">
         <p>You should start appointment before interacting with patient</p>
         <button mat-raised-button color="primary" (click)="startAppointment()">Start</button>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile *ngIf="!checkIfStarted() && checkIfPatient()" class="diagnose-actions-container" colspan="2"
+    <mat-grid-tile *ngIf="!checkIfStarted() && !checkIfFinalized() && checkIfPatient()" class="diagnose-actions-container" colspan="2"
                    rowspan="20">
       <div class="start-screen">
         <p>Appointment hasn't been started yet</p>
         <p>Appointment should be started by doctor</p>
       </div>
     </mat-grid-tile>
-    <mat-grid-tile *ngIf="checkIfStarted()" class="diagnose-actions-container" [colspan]="2"
+    <mat-grid-tile *ngIf="checkIfStarted() || checkIfFinalized()" class="diagnose-actions-container" [colspan]="2"
                    rowspan="62">
       <div class="diagnose-actions-inputs">
         <div class="diagnose-actions-input-diagnose">
 
           <mat-form-field color="primary" appearance="fill">
-            <mat-label>Please, input diagnose info here</mat-label>
-            <textarea [disabled]="checkIfPatient()" [formControl]="this.formGroupDiagnose" #diagnose cdkTextareaAutosize
+            <mat-label>Diagnose</mat-label>
+            <textarea [formControl]="this.formGroupDiagnose" #diagnose cdkTextareaAutosize
                       #autosize="cdkTextareaAutosize"
                       cdkAutosizeMinRows="1"
                       cdkAutosizeMaxRows="15" matInput></textarea>
             <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupDiagnose)}}</mat-error>
           </mat-form-field>
-          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor()">
+          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor() && checkIfStarted()">
             <button mat-raised-button color="primary" (click)="saveDiagnose()">Save diagnose</button>
           </div>
 
@@ -93,15 +93,15 @@
         <div class="diagnose-actions-input-treatment" *ngIf="checkIfDiagnoseSettled()">
 
           <mat-form-field color="primary" appearance="fill">
-            <mat-label>Please, input treatment info here</mat-label>
-            <textarea [disabled]="checkIfPatient()" [formControl]="this.formGroupTreatment" #treatment
+            <mat-label>Treatment</mat-label>
+            <textarea [formControl]="this.formGroupTreatment" #treatment
                       cdkTextareaAutosize
                       #autosize="cdkTextareaAutosize"
                       cdkAutosizeMinRows="1"
                       cdkAutosizeMaxRows="15" matInput required></textarea>
             <mat-error *ngIf="this.formGroupDiagnose.invalid">{{getErrorMessage(this.formGroupTreatment)}}</mat-error>
           </mat-form-field>
-          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor()">
+          <div class="diagnose-actions-input-save" *ngIf="checkIfDoctor() && checkIfStarted()">
             <button mat-raised-button color="primary" (click)="saveTreatment()">Save treatment</button>
           </div>
 

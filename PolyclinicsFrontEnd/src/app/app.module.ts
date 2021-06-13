@@ -24,6 +24,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatExpansionModule} from "@angular/material/expansion";
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 
 @NgModule({
@@ -33,29 +34,30 @@ import {MatExpansionModule} from "@angular/material/expansion";
     AllAppointmentsComponent,
     ViewMedicalCardComponent,
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatSnackBarModule,
-    HttpClientModule,
-    RouterModule,
-    LayoutModule,
-    RouterModule,
-    AppRoutingModule,
-    IsLoadingModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatTableModule,
-    MatToolbarModule,
-    MatGridListModule,
-    MatCardModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatExpansionModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatSnackBarModule,
+        HttpClientModule,
+        RouterModule,
+        LayoutModule,
+        RouterModule,
+        AppRoutingModule,
+        IsLoadingModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatTableModule,
+        MatToolbarModule,
+        MatGridListModule,
+        MatCardModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatExpansionModule,
+        MatCheckboxModule
+    ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     ],
